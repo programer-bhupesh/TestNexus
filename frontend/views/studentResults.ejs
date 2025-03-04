@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Test Results - Test Nexus</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 80%;
+        margin: 20px auto;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .no-results {
+        text-align: center;
+        margin: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>My Test Results</h1>
+    <a href="/student">Back to Dashboard</a>
+    <% if (responses.length===0) { %>
+    <p class="no-results">No results available yet.</p>
+    <% } else { %>
+    <table>
+      <tr>
+        <th>Test Name</th>
+        <th>Question</th>
+        <th>Score</th>
+        <th>Total Score</th>
+      </tr>
+      <% responses.forEach(response=> { %> <% if (response.testId) { %> <%
+      response.answers.forEach((answer, index)=> { %>
+      <tr>
+        <% if (index===0) { %>
+        <td rowspan="<%= response.answers.length %>">
+          <%= response.testId.testName %>
+        </td>
+        <% } %>
+        <td>
+          <%= answer.questionId ? 'Question ' + (index + 1) : 'Unknown Question'
+          %>
+        </td>
+        <td><%= answer.score !==undefined ? answer.score : 'N/A' %></td>
+        <% if (index===0) { %>
+        <td rowspan="<%= response.answers.length %>">
+          <%= response.totalScore !==undefined ? response.totalScore : 'N/A' %>
+        </td>
+        <% } %>
+      </tr>
+      <% }) %> <% } else { %>
+      <tr>
+        <td>Test Not Found</td>
+        <td colspan="2">N/A</td>
+        <td>
+          <%= response.totalScore !==undefined ? response.totalScore : 'N/A' %>
+        </td>
+      </tr>
+      <% } %> <% }) %>
+    </table>
+    <% } %>
+  </body>
+</html>

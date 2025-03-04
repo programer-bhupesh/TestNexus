@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: <%= test.testName %>
+    </title>
+</head>
+
+<body>
+    <h1>Test: <%= test.testName %>
+    </h1>
+    <form action="/tests/<%= test._id %>/submit" method="POST">
+        <% test.questions.forEach((question, index)=> { %>
+            <div>
+                <h3>
+                    <%= index + 1 %>. <%= question.questionText %>
+                </h3>
+                <% if (question.type==="multiple-choice" ) { %>
+                    <% question.options.forEach((option, i)=> { %>
+                        <label>
+                            <input type="radio" name="answers[<%= question._id %>]" value="<%= i %>" required>
+                            <%= option %>
+                        </label><br>
+                        <% }) %>
+                            <% } else if (question.type==="coding" ) { %>
+                                <textarea name="answers[<%= question._id %>]" class="code-editor" required></textarea>
+                                <p>Test Cases: <%= JSON.stringify(question.testCases) %>
+                                </p>
+                                <% } %>
+            </div>
+            <% }) %>
+                <button type="submit">Submit Test</button>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
+    <script>
+        document.querySelectorAll(".code-editor").forEach(textarea => {
+            CodeMirror.fromTextArea(textarea, {
+                lineNumbers: true,
+                mode: "javascript",
+            });
+        });
+    </script>
+</body>
+
+</html>

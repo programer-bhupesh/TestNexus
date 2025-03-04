@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Nexus - A central hub for managing tests and evaluations</title>
+    <link rel="stylesheet" href="./css/loginstyles.css">
+</head>
+
+<body>
+    <div class="root">
+        <form action="/signup" method="post">
+            <label for="username">Full Name:</label>
+            <input type="text" required="true" name="username" id="username">
+            <label for="email">Email:</label>
+            <input type="email" required="true" name="email" id="email"/>
+            <label for="password">Password:</label>
+            <input type="password" required="true" name="password" id="password">
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" required="true" name="confirm_password" id="confirm_password">
+            <button>Sign Up</button>
+            <br><br>
+            <div class="acc">
+                <a href="/adminlogin"> Back to Login </a>
+            </div>
+        </form>
+    </div>
+    <script src="./js/pwdscript.js"></script>
+</body>
+
+</html>

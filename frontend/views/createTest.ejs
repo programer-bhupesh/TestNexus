@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Test</title>
+    <style>
+        .student-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width:40vw;
+        }
+
+        .student-item {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Create a New Test</h1>
+    <form action="/tests" method="POST">
+        <label for="testName">Test Name:</label>
+        <input type="text" id="testName" name="testName" required><br>
+
+        <label for="assignedTeacher">Assign Teacher:</label>
+        <select id="assignedTeacher" name="assignedTeacher" required>
+            <% teachers.forEach(teacher=> { %>
+                <option value="<%= teacher._id %>">
+                    <%= teacher.username %>
+                </option>
+                <% }) %>
+        </select><br>
+
+        <label>Eligible Students:</label>
+        <div class="student-list">
+            <% students.forEach(student=> { %>
+                <div class="student-item">
+                    <input type="checkbox" name="eligibleStudents" value="<%= student._id %>">
+                    <%= student.username %>
+                </div>
+                <% }) %>
+        </div><br>
+
+        <button type="submit">Create Test</button>
+    </form>
+</body>
+
+</html>

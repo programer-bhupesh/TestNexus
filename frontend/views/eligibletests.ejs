@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TestNexus - A central hub for managing tests and evaluations.</title>
+</head>
+<body>
+    <h1>Eligible Tests</h1>
+    <ul>
+        <% tests.forEach(test=> { %>
+            <li>
+                <%= test.testName %>
+                    <a href="/tests/<%= test._id %>">Take Test</a>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+</html>

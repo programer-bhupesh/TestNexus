@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Another Admin</title>
+    <link rel="stylesheet" href="/css/loginstyles.css">
+</head>
+
+<body>
+    <div class="root">
+        <h2>Add a New Admin</h2>
+        <form action="/addadmin" method="post">
+            <label for="username">Username:</label>
+            <input name="username" id="username" required="true" />
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required="true">
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required="true" />
+            <button type="submit">Add Admin</button>
+            <br><br>
+            <a href="/admin">Back to Dashboard</a>
+        </form>
+    </div>
+</body>
+
+</html>

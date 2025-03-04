@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Tests - Test Nexus</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <h1>All Tests</h1>
+    <a href="/admin">Back to Dashboard</a>
+    <% if (tests.length===0) { %>
+        <p>No tests found.</p>
+        <% } else { %>
+            <table>
+                <tr>
+                    <th>Test Name</th>
+                    <th>Actions</th>
+                </tr>
+                <% tests.forEach(test=> { %>
+                    <tr>
+                        <td>
+                            <%= test.testName %>
+                        </td>
+                        <td><a href="/tests/<%= test._id %>/add-question">Add Questions</a></td>
+                    </tr>
+                    <% }) %>
+            </table>
+            <% } %>
+</body>
+
+</html>
