@@ -1,127 +1,88 @@
-:root {
-    --sidebar-width: 250px;
-    --sidebar-bg: #fff;
-    --primary-gradient: linear-gradient(135deg, #ffbb00, #ff9501);
-    --hover-gradient: linear-gradient(135deg, #ffb700, #ff8f00);
-    --body-gradient: linear-gradient(135deg, #667eea, #764ba2);
-}
+/* Reset and Base Styles */
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: sans-serif;
-    width: 100vw;
-    height: 100vh;
-    background: var(--body-gradient);
-    transition: margin-left 0.3s;
-    overflow-x: hidden;
+  font-family: Arial, sans-serif;
+  /* Cool light gradient background for the dashboard */
+  background: linear-gradient(135deg, #e0f7fa, #e1f5fe);
+  color: #333;
 }
 
-/* Sidebar styling */
+/* Sidebar Styles */
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: var(--sidebar-width);
-    height: 100vh;
-    background: var(--sidebar-bg);
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out;
-    transform: translateX(0);
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    /* Evenly distribute nav items */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  /* Complementary gradient for the sidebar */
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+  padding-top: 60px;
+  /* Leaves space for the toggle button */
 }
 
-/* When sidebar is closed, shift it off screen */
-.sidebar.closed {
-    transform: translateX(-100%);
+.sidebar.active {
+  transform: translateX(0);
 }
 
-/* Nav item styling (using card design) */
-.nav-item {
-    background: var(--primary-gradient);
-    border-radius: 50px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+.sidebar .nav-item {
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  /* Space between menu items */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.nav-item a {
-    display: block;
-    padding: 15px 20px;
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: bold;
-    letter-spacing: 1px;
-    transition: color 0.3s;
+.sidebar .nav-item a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
 }
 
-.nav-item:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-    background: var(--hover-gradient);
-}
-
-.nav-item a:focus,
-.nav-item:focus-within {
-    outline: 2px solid #333;
-    outline-offset: 4px;
-}
-
-/* Toggle button styling */
+/* Toggle Button Styles */
 .toggle-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1100;
-    background: #ffbb00;
-    border: none;
-    color: #fff;
-    font-size: 1.5rem;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.3s;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  color: #4e54c8;
+  cursor: pointer;
+  z-index: 1100;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  outline: none;
 }
 
-.toggle-btn:hover {
-    background: #ff9501;
-    transform: scale(1.1);
-}
-
-/* Main content styling */
+/* Main Content Area */
 .main-content {
-    margin-left: var(--sidebar-width);
-    padding-left: 100px;
-    padding-top: 2rem;
-    transition: margin-left 0.3s;
+  padding: 20px;
+  padding-left: 100px;
+  /* Fixed left padding as requested */
+  transition: margin-left 0.3s ease;
 }
 
-/* When sidebar is closed, main content takes full width */
-.sidebar.closed+.main-content {
-    margin-left: 0;
+/* Shift content when sidebar is active */
+.sidebar.active~.main-content {
+  margin-left: 250px;
 }
 
-/* Responsive adjustments */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    :root {
-        --sidebar-width: 200px;
-    }
+  .sidebar {
+    width: 200px;
+  }
 
-    .toggle-btn {
-        top: 15px;
-        left: 15px;
-        font-size: 1.3rem;
-        padding: 8px 12px;
-    }
-
-    .main-content {
-        padding: 1rem;
-    }
+  .sidebar.active~.main-content {
+    margin-left: 200px;
+  }
 }

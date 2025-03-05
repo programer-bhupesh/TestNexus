@@ -1,15 +1,15 @@
-const toggleBtn = document.getElementById("toggle-btn");
-const sidebar = document.getElementById("sidebar");
-const mainContent = document.querySelector(".main-content");
+document.addEventListener("DOMContentLoaded", function () {
+  const toggleBtn = document.getElementById("toggle-btn");
+  const sidebar = document.getElementById("sidebar");
 
-toggleBtn.addEventListener("click", function () {
-  sidebar.classList.toggle("closed");
-  // Adjust main content margin based on sidebar state
-  if (sidebar.classList.contains("closed")) {
-    mainContent.style.marginLeft = "0";
-  } else {
-    mainContent.style.marginLeft = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--sidebar-width");
-  }
+  toggleBtn.addEventListener("click", function () {
+    // Toggle the active class on the sidebar
+    sidebar.classList.toggle("active");
+    // Update the toggle button icon based on sidebar state
+    if (sidebar.classList.contains("active")) {
+      toggleBtn.innerHTML = "&times;"; // X icon for closing
+    } else {
+      toggleBtn.innerHTML = "&#9776;"; // Hamburger menu
+    }
+  });
 });
