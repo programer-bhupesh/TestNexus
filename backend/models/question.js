@@ -14,7 +14,6 @@ const questionSchema = new mongoose.Schema({
   questionText: { type: String, required: true },
   options: [String], // For multiple-choice: array of options
   correctAnswer: Number, // Index of correct option for multiple-choice
-  language: String, // For coding: programming language
   testCases: [
     {
       input: String,

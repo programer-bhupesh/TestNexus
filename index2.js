@@ -1,16 +1,18 @@
-if (process.env.NODE_ENV != "production") {
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const MONGO_URL = process.env.MONGOURL;
+const MONGO_URL = process.env.MONGOURL1;
 const path = require("path");
 const methodOverride = require("method-override");
 const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const cors = require("cors");
+const fetch = require("node-fetch");
 
 const adminRouter = require("./backend/routes/admin");
 const teacherRouter = require("./backend/routes/teacher");
@@ -26,14 +28,16 @@ app.set("views", path.join(__dirname, "frontend", "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "frontend", "public")));
+app.use(express.json());
+app.use(cors());
 
 // Session Configuration
 app.use(
   session({
-    secret: "yourSecretKey", // Replace with a secure key in production
+    secret: "yourSecretKey",
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 },
   })
 );
 
@@ -77,6 +81,22 @@ mongoose
   .connect(MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Database connection error:", err));
+
+// Integrated Proxy Route for JDoodle API Execution
+app.post("/execute", async (req, res) => {
+  try {
+    const response = await fetch("https://api.jdoodle.com/v1/execute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req.body),
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("Error executing code:", error);
+    res.status(500).json({ error: "Error executing code" });
+  }
+});
 
 // Routes
 app.use(adminRouter);

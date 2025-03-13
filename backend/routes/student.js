@@ -4,7 +4,7 @@ const passport = require("passport");
 const Test = require("../models/test");
 const Question = require("../models/question");
 const Response = require("../models/response");
-const vm = require("vm");
+const fetch = require("node-fetch");
 
 // Middleware to check if user is authenticated as a student
 function isStudent(req, res, next) {
@@ -56,20 +56,51 @@ router.get("/tests/:testId", isStudent, async (req, res) => {
     ) {
       return res.status(403).send("Unauthorized");
     }
-    res.render("takeTest.ejs", { test });
+    const testPlain = test.toObject();
+    res.render("takeTest.ejs", { test: testPlain });
   } catch (err) {
     console.error("Error fetching test:", err);
     res.status(500).send("Something went wrong!");
   }
 });
 
+// Function to execute code using JDoodle API
+async function executeCode({ code, stdin, language }) {
+  const clientId = process.env.JDOODLE_CLIENT_ID;
+  const clientSecret = process.env.JDOODLE_CLIENT_SECRET;
+  const apiUrl = "http://localhost:8080/execute";
+
+  const payload = {
+    clientId,
+    clientSecret,
+    script: code,
+    language: language === "javascript" ? "nodejs" : language,
+    versionIndex: "0",
+    stdin,
+  };
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    if (data.error || data.statusCode !== 200) {
+      throw new Error(data.error || "JDoodle execution failed");
+    }
+    return data;
+  } catch (error) {
+    console.error("JDoodle execution error:", error);
+    throw error;
+  }
+}
+
 // Submit test answers with automatic evaluation
 router.post("/tests/:testId/submit", isStudent, async (req, res) => {
   try {
     const test = await Test.findById(req.params.testId).populate("questions");
-    if (!test) {
-      return res.status(404).send("Test not found");
-    }
+    if (!test) return res.status(404).send("Test not found");
     if (
       !test.eligibleStudents.some(
         (id) => id.toString() === req.user._id.toString()
@@ -77,7 +108,7 @@ router.post("/tests/:testId/submit", isStudent, async (req, res) => {
     ) {
       return res.status(403).send("Unauthorized");
     }
-    const { answers } = req.body; // Object with questionId as keys and answers as values
+    const { answers, languages } = req.body;
     const response = new Response({
       studentId: req.user._id,
       testId: test._id,
@@ -90,7 +121,7 @@ router.post("/tests/:testId/submit", isStudent, async (req, res) => {
       let score = 0;
       if (question.type === "multiple-choice") {
         const isCorrect = parseInt(answer) === question.correctAnswer;
-        score = isCorrect ? 1 : 0; // 1 point for correct answer
+        score = isCorrect ? 1 : 0;
         response.answers.push({
           questionId: question._id,
           answer,
@@ -98,44 +129,68 @@ router.post("/tests/:testId/submit", isStudent, async (req, res) => {
           score,
         });
       } else if (question.type === "coding") {
+        const language = languages[question._id];
         const outputs = [];
         let allTestCasesPassed = true;
-        if (question.language === "javascript") {
-          for (let i = 0; i < question.testCases.length; i++) {
-            const { input, expectedOutput } = question.testCases[i];
-            try {
-              const script = new vm.Script(`function run(input) { ${answer} }`);
-              const context = vm.createContext({ input });
-              script.runInContext(context);
-              const output = context.run(input).toString();
-              const isCorrect = output === expectedOutput;
-              outputs.push({
-                testCaseIndex: i,
-                output,
-                isCorrect,
-              });
-              if (!isCorrect) allTestCasesPassed = false;
-            } catch (e) {
-              outputs.push({
-                testCaseIndex: i,
-                output: `Error: ${e.message}`,
-                isCorrect: false,
-              });
-              allTestCasesPassed = false;
-            }
-          }
-          score = allTestCasesPassed ? 1 : 0; // 1 point if all test cases pass
-        } else {
-          outputs.push({
-            testCaseIndex: 0,
-            output: "Not executed",
-            isCorrect: false,
-          });
-          score = 0;
+
+        const t = question.testCases.length;
+        const combinedInput = `${t}\n${question.testCases
+          .map((tc) => tc.input)
+          .join("\n")}`;
+        const expectedOutputs = question.testCases.map(
+          (tc) => tc.expectedOutput
+        );
+
+        let modifiedCode = answer;
+        if (language === "cpp" && !answer.includes("\n")) {
+          modifiedCode = answer.replace(/cout<<a\+b;/g, "cout<<a+b<<endl;");
         }
+
+        try {
+          const result = await executeCode({
+            code: modifiedCode,
+            stdin: combinedInput,
+            language,
+          });
+          const actualOutput = result.output ? result.output.trim() : "";
+          const actualOutputLines = actualOutput
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line !== "");
+
+          if (actualOutputLines.length !== expectedOutputs.length) {
+            allTestCasesPassed = false;
+          }
+
+          for (let i = 0; i < question.testCases.length; i++) {
+            const expected = expectedOutputs[i];
+            const actual =
+              i < actualOutputLines.length ? actualOutputLines[i] : "";
+            const isCorrect = actual === expected;
+
+            outputs.push({
+              testCaseIndex: i,
+              output: actual || "No output",
+              isCorrect,
+            });
+            if (!isCorrect) allTestCasesPassed = false;
+          }
+        } catch (e) {
+          for (let i = 0; i < question.testCases.length; i++) {
+            outputs.push({
+              testCaseIndex: i,
+              output: `Error: ${e.message}`,
+              isCorrect: false,
+            });
+          }
+          allTestCasesPassed = false;
+        }
+
+        score = allTestCasesPassed ? 1 : 0;
         response.answers.push({
           questionId: question._id,
           answer,
+          language,
           outputs,
           score,
         });
@@ -144,7 +199,7 @@ router.post("/tests/:testId/submit", isStudent, async (req, res) => {
     }
     console.log("Creating response with testId:", test._id);
     await response.save();
-    res.redirect("/student/results"); // Redirect to results page after submission
+    res.redirect("/student/results");
   } catch (err) {
     console.error("Error submitting test:", err);
     res.status(500).send("Something went wrong!");

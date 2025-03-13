@@ -18,6 +18,7 @@ const responseSchema = new mongoose.Schema({
         ref: "Question",
       },
       answer: String, // Multiple-choice: option index; Coding: code
+      language:String,
       outputs: [
         {
           testCaseIndex: Number,

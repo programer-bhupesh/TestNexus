@@ -4,45 +4,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test: <%= test.testName %>
-    </title>
+    <title>Test: <%= test.testName %> - Test Nexus</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        h3 {
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .code-editor-container {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .test-cases {
+            margin-top: 15px;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        .test-cases pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+
+        .output-container {
+            margin-top: 10px;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .mc-options label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .accepted {
+            color: green;
+            font-weight: bold;
+        }
+
+        .wrong {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Test: <%= test.testName %>
-    </h1>
-    <form action="/tests/<%= test._id %>/submit" method="POST">
-        <% test.questions.forEach((question, index)=> { %>
-            <div>
-                <h3>
-                    <%= index + 1 %>. <%= question.questionText %>
-                </h3>
-                <% if (question.type==="multiple-choice" ) { %>
-                    <% question.options.forEach((option, i)=> { %>
-                        <label>
-                            <input type="radio" name="answers[<%= question._id %>]" value="<%= i %>" required>
-                            <%= option %>
-                        </label><br>
-                        <% }) %>
-                            <% } else if (question.type==="coding" ) { %>
-                                <textarea name="answers[<%= question._id %>]" class="code-editor" required></textarea>
-                                <p>Test Cases: <%= JSON.stringify(question.testCases) %>
-                                </p>
-                                <% } %>
-            </div>
-            <% }) %>
-                <button type="submit">Submit Test</button>
-    </form>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
-    <script>
-        document.querySelectorAll(".code-editor").forEach(textarea => {
-            CodeMirror.fromTextArea(textarea, {
-                lineNumbers: true,
-                mode: "javascript",
-            });
-        });
+    <div class="container">
+        <h1>Test: <%= test.testName %>
+        </h1>
+        <form action="/tests/<%= test._id %>/submit" method="POST" id="testForm">
+            <% test.questions.forEach((question, index)=> { %>
+                <div class="question">
+                    <h3>
+                        <%= index + 1 %>. <%= question.questionText %>
+                    </h3>
+                    <% if (question.type==="multiple-choice" ) { %>
+                        <div class="mc-options">
+                            <% question.options.forEach((option, i)=> { %>
+                                <label>
+                                    <input type="radio" name="answers[<%= question._id %>]" value="<%= i %>" required>
+                                    <%= option %>
+                                </label>
+                                <% }) %>
+                        </div>
+                        <% } else if (question.type==="coding" ) { %>
+                            <label for="language-<%= question._id %>">Select Language:</label>
+                            <select name="languages[<%= question._id %>]" id="language-<%= question._id %>" required>
+                                <option value="c">C</option>
+                                <option value="cpp">C++</option>
+                                <option value="java">Java</option>
+                                <option value="python3">Python</option>
+                                <option value="javascript">JavaScript</option>
+                                <option value="ruby">Ruby</option>
+                                <option value="swift">Swift</option>
+                            </select>
+                            <div class="code-editor-container" id="editor-<%= question._id %>">
+                                <textarea name="answers[<%= question._id %>]" class="code-editor"
+                                    style="display: none;"></textarea>
+                            </div>
+                            <div class="test-cases">
+                                <label>Test Cases:</label>
+                                <pre>Inputs:
+<%= question.testCases.length %>
+<% question.testCases.forEach(tc => { %><%= tc.input %>
+<% }) %></pre>
+                                <pre>Expected Outputs:
+<% question.testCases.forEach(tc => { %><%= tc.expectedOutput %>
+<% }) %></pre>
+                            </div>
+                            <button type="button" class="run-code" data-question-id="<%= question._id %>">Run
+                                Code</button>
+                            <button type="button" class="run-tests" data-question-id="<%= question._id %>">Run Test
+                                Cases</button>
+                            <div class="output-container" id="output-<%= question._id %>">Output will appear here...
+                            </div>
+                            <% } %>
+                </div>
+                <% }) %>
+                    <button type="submit" class="submit-btn">Submit Test</button>
+        </form>
+    </div>
+
+    <!-- Pass test data as a JSON string in a script tag -->
+    <script type="application/json" id="test-data">
+        <%- JSON.stringify(test) %>
     </script>
+    <script src="./js/takeTest.js"></script>
 </body>
 
 </html>

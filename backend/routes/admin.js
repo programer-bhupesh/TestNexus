@@ -81,7 +81,7 @@ router.post("/addadmin", isAdmin, async (req, res) => {
   try {
     const { username, email, password } = req.body;
     const admin = new Admin({ username, email });
-    await Admin.register(admin, password); // Hashes password and saves admin
+    await Admin.register(admin, password);
     res.redirect("/admin");
   } catch (err) {
     console.error("Error adding admin:", err);
@@ -102,7 +102,7 @@ router.post("/tests", isAdmin, async (req, res) => {
   const test = new Test({
     testName,
     assignedTeacher,
-    eligibleStudents: eligibleStudents || [], // Handle multiple students
+    eligibleStudents: eligibleStudents || [],
   });
   await test.save();
   res.redirect("/admin");
@@ -122,8 +122,14 @@ router.get("/tests/:testId/add-question", isAdmin, async (req, res) => {
 
 // Add question to a test - POST route to save question
 router.post("/tests/:testId/questions", isAdmin, async (req, res) => {
-  const { type, questionText, options, correctAnswer, language, testCases } =
-    req.body;
+  const {
+    type,
+    questionText,
+    options,
+    correctAnswer,
+    testInputs,
+    expectedOutputs,
+  } = req.body;
   const question = new Question({
     testId: req.params.testId,
     type,
@@ -134,8 +140,19 @@ router.post("/tests/:testId/questions", isAdmin, async (req, res) => {
     question.options = options.split(",").map((opt) => opt.trim());
     question.correctAnswer = parseInt(correctAnswer);
   } else if (type === "coding") {
-    question.language = language;
-    question.testCases = JSON.parse(testCases);
+    const inputLines = testInputs.trim().split("\n");
+    const numTestCases = parseInt(inputLines[0]);
+    const inputs = inputLines.slice(1);
+    const outputs = expectedOutputs.trim().split("\n");
+    if (inputs.length !== numTestCases || outputs.length !== numTestCases) {
+      return res
+        .status(400)
+        .send("Number of test cases must match inputs and outputs");
+    }
+    question.testCases = inputs.map((input, i) => ({
+      input: input.trim(),
+      expectedOutput: outputs[i].trim(),
+    }));
   }
 
   await question.save();

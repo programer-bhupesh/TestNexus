@@ -56,8 +56,7 @@ router.post("/tests/:testId/questions", isTeacher, async (req, res) => {
   if (!test || test.assignedTeacher.toString() !== req.user._id.toString()) {
     return res.status(403).send("Unauthorized");
   }
-  const { type, questionText, options, correctAnswer, language, testCases } =
-    req.body;
+  const { type, questionText, options, correctAnswer, testCases } = req.body;
   const question = new Question({ testId: test._id, type, questionText });
 
   if (type === "multiple-choice") {
@@ -69,8 +68,7 @@ router.post("/tests/:testId/questions", isTeacher, async (req, res) => {
     }
     question.correctAnswer = parseInt(correctAnswer);
   } else if (type === "coding") {
-    question.language = language; // e.g., "javascript", "python"
-    question.testCases = JSON.parse(testCases); // Expecting JSON string
+    question.testCases = JSON.parse(testCases); // Only test cases, no language
   }
   await question.save();
   res.redirect("/teacher/my-tests");
