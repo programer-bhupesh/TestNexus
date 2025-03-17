@@ -41,8 +41,8 @@ router.get("/addteacher", isAdmin, (req, res) => {
 
 router.post("/addteacher", isAdmin, async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const teacher = new Teacher({ username, email });
+    const { username, email, password, fullName } = req.body;
+    const teacher = new Teacher({ fullName, username, email });
     await Teacher.register(teacher, password);
     res.redirect("/admin");
   } catch (err) {
