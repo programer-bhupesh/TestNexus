@@ -1,13 +1,16 @@
+// Configure Monaco Editor
 require.config({
   paths: {
     vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs",
   },
 });
+
 require(["vs/editor/editor.main"], function () {
   document.querySelectorAll(".code-editor").forEach((textarea) => {
     const questionId = textarea.name.match(/answers\[(.+)\]/)[1];
     const languageSelect = document.getElementById(`language-${questionId}`);
     const editorContainer = document.getElementById(`editor-${questionId}`);
+
     const editor = monaco.editor.create(editorContainer, {
       value: "// Write your code here...\n",
       language: languageSelect.value,
@@ -17,17 +20,22 @@ require(["vs/editor/editor.main"], function () {
       scrollBeyondLastLine: false,
       minimap: { enabled: false },
     });
+
     textarea.editor = editor;
-    editor.getModel().onDidChangeContent(() => {
+
+    // Sync editor with textarea
+    editor.onDidChangeModelContent(() => {
       textarea.value = editor.getValue();
     });
+
+    // Update language
     languageSelect.addEventListener("change", () => {
       monaco.editor.setModelLanguage(editor.getModel(), languageSelect.value);
     });
   });
 });
 
-// Parse test data from the script tag
+// Parse test data
 const testDataElement = document.getElementById("test-data");
 const test = JSON.parse(testDataElement.textContent);
 
@@ -52,7 +60,6 @@ document.querySelectorAll(".run-code").forEach((button) => {
     const combinedInput = `${t}\n${question.testCases
       .map((tc) => tc.input)
       .join("\n")}`;
-
     outputDiv.textContent = "Running...";
 
     if (language === "cpp" && !code.includes("\n") && code.includes("cout<<")) {
@@ -64,8 +71,8 @@ document.querySelectorAll(".run-code").forEach((button) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          clientId:process.env.JDOODLE_CLIENT_ID,
-          clientSecret:process.env.JDOODLE_CLIENT_SECRET,
+          clientId: "<%= process.env.JDOODLE_CLIENT_ID %>",
+          clientSecret: "<%= process.env.JDOODLE_CLIENT_SECRET %>",
           script: code,
           language: language === "javascript" ? "nodejs" : language,
           versionIndex: "0",
@@ -74,8 +81,16 @@ document.querySelectorAll(".run-code").forEach((button) => {
       });
       const result = await response.json();
       outputDiv.textContent = result.output || result.error || "No output";
+      outputDiv.style.background = result.error
+        ? "rgba(231, 76, 60, 0.2)"
+        : "rgba(255, 255, 255, 0.15)";
+      setTimeout(
+        () => (outputDiv.style.background = "rgba(255, 255, 255, 0.1)"),
+        1000
+      );
     } catch (error) {
       outputDiv.textContent = "Error running code: " + error.message;
+      outputDiv.style.background = "rgba(231, 76, 60, 0.2)";
     }
   });
 });
@@ -116,8 +131,8 @@ document.querySelectorAll(".run-tests").forEach((button) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          clientId: process.env.JDOODLE_CLIENT_ID,
-          clientSecret: process.env.JDOODLE_CLIENT_SECRET,
+          clientId: "<%= process.env.JDOODLE_CLIENT_ID %>",
+          clientSecret: "<%= process.env.JDOODLE_CLIENT_SECRET %>",
           script: code,
           language: language === "javascript" ? "nodejs" : language,
           versionIndex: "0",
@@ -127,6 +142,7 @@ document.querySelectorAll(".run-tests").forEach((button) => {
       const result = await response.json();
       if (result.error) {
         outputDiv.innerHTML = "Error: " + result.error;
+        outputDiv.style.background = "rgba(231, 76, 60, 0.2)";
       } else {
         const actualOutput = result.output ? result.output.trim() : "";
         const expected = expectedOutput.trim();
@@ -154,6 +170,8 @@ document.querySelectorAll(".run-tests").forEach((button) => {
 
         if (passed) {
           outputDiv.innerHTML = '<span class="accepted">Accepted</span>';
+          outputDiv.style.background =
+            "rgba(46, 204, 113, 0.2)"; /* Green tint */
         } else {
           outputDiv.innerHTML =
             '<span class="wrong">Wrong Answer</span><br>' +
@@ -161,10 +179,25 @@ document.querySelectorAll(".run-tests").forEach((button) => {
             expected +
             "<br><br>Your Output:<br>" +
             actualOutput;
+          outputDiv.style.background = "rgba(231, 76, 60, 0.2)"; /* Red tint */
         }
+        setTimeout(
+          () => (outputDiv.style.background = "rgba(255, 255, 255, 0.1)"),
+          1000
+        );
       }
     } catch (error) {
       outputDiv.textContent = "Error running test cases: " + error.message;
+      outputDiv.style.background = "rgba(231, 76, 60, 0.2)";
+    }
+  });
+});
+
+// Sync editor content on form submission
+document.getElementById("testForm").addEventListener("submit", function () {
+  document.querySelectorAll(".code-editor").forEach((textarea) => {
+    if (textarea.editor) {
+      textarea.value = textarea.editor.getValue();
     }
   });
 });

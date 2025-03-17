@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Test Nexus</title>
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-container h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar" class="sidebar">
+        <div class="nav-item"><a href="/eligible-tests">View Test</a></div>
+        <div class="nav-item"><a href="/student/results">Results</a></div>
+        <div class="nav-item"><a href="/student/profile">Profile</a></div>
+        <div class="nav-item"><a href="/student/settings">Settings</a></div>
+        <div class="nav-item"><a href="/logout">Logout</a></div>
+    </div>
+    <div class="main-content">
+        <div class="profile-container">
+            <h2>Your Profile</h2>
+            <form action="/student/profile" method="POST">
+                <div class="form-group">
+                    <label for="username">Username (Read-only):</label>
+                    <input type="text" id="username" value="<%= username %>" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="fullName">Full Name:</label>
+                    <input type="text" id="fullName" name="fullName" value="<%= fullName %>">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="<%= email %>">
+                </div>
+                <button type="submit">Update Profile</button>
+            </form>
+        </div>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+
+</html>

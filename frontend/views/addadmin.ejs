@@ -4,22 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Another Admin</title>
-    <link rel="stylesheet" href="/css/loginstyles.css">
+    <title>Add Another Admin - Test Nexus</title>
+    <link rel="stylesheet" href="./css/loginstyles.css">
 </head>
 
-<body>
+<body class="admin">
     <div class="root">
         <h2>Add a New Admin</h2>
         <form action="/addadmin" method="post">
-            <label for="username">Username:</label>
-            <input name="username" id="username" required="true" />
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required="true">
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required="true" />
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required>
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <label for="fullName">Full Name</label>
+            <input type="text" name="fullName" id="fullName">
             <button type="submit">Add Admin</button>
-            <br><br>
             <a href="/admin">Back to Dashboard</a>
         </form>
     </div>

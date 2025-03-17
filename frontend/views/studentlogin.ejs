@@ -4,26 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Nexus - A central hub for managing tests and evaluations.</title>
+    <title>Student Login - Test Nexus</title>
     <link rel="stylesheet" href="./css/loginstyles.css">
 </head>
 
-<body>
-    <div class="root">
-        <form action="/studentlogin" method="post">
-            <label for="username">UserName:</label>
-            <input name="username" id="username" required="true" />
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required="true">
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required="true" />
-            <a href="forgetpwd">forget Password</a>
-            <br><br>
+<body class="student-login">
+    <div class="login-container">
+        <h1>Student Login</h1>
+        <form class="login-form" action="/studentlogin" method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
             <button type="submit">Login</button>
-            <br><br>
         </form>
+        <% if (typeof error !=='undefined' ) { %>
+            <p class="error-message">
+                <%= error %>
+            </p>
+            <% } %>
     </div>
-    <script src="./js/pwdscript.js"></script>
 </body>
 
 </html>

@@ -1,87 +1,273 @@
-/* Import a modern font from Google Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
-
-/* Reset basic elements */
+/* Reset and Base Styles */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-/* Style the body with a gradient background and center the login form */
 body {
-    font-family: "Roboto", sans-serif;
-    background: linear-gradient(135deg, #59cdff 0%, #5ebfe0 50%, #4296e5 100%);
-    height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    /* Deep midnight blue gradient */
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
     display: flex;
-    align-items: center;
     justify-content: center;
-    color: #333;
+    align-items: center;
+    overflow-x: hidden;
+    color: #e0e0e0;
 }
 
-/* Style the login container */
-.root {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
+/* Root/Login Container */
+.root,
+.login-container {
+    background: rgba(34, 34, 66, 0.9);
+    /* Semi-transparent dark purple */
+    backdrop-filter: blur(12px);
+    /* Glassmorphism effect */
+    border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    width: 30vw;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Style the labels */
-.root label {
-    font-size: 0.9rem;
-    margin-bottom: 5px;
+/* Role-Specific Gradient Overlay */
+.root::before,
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.admin .root::before,
+.admin-login .login-container::before {
+    background: linear-gradient(to bottom, #ff6b6b, #ff8e53);
+    /* Coral to peach */
+}
+
+.student .root::before,
+.student-login .login-container::before {
+    background: linear-gradient(to bottom, #3498db, #2980b9);
+    /* Blue to deep blue */
+}
+
+.teacher .root::before,
+.teacher-login .login-container::before {
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    /* Green to deep green */
+}
+
+/* Heading */
+.root h2,
+.login-container h1 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 2.2em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 1;
+}
+
+/* Form Styles */
+form,
+.login-form {
+    position: relative;
+    z-index: 1;
+}
+
+form label,
+.login-form label {
     display: block;
-    font-weight: 500;
-    color: #555;
+    color: #d0d0e0;
+    /* Soft gray */
+    font-size: 1.1em;
+    margin-bottom: 8px;
+    font-weight: 400;
 }
 
-/* Style the email and password inputs */
-.root input[type="email"],
-.root input[name="username"],
-.root input[type="password"],
-.root input[type="text"],
-.root select {
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+.login-form input[type="text"],
+.login-form input[type="email"],
+.login-form input[type="password"] {
     width: 100%;
     padding: 12px 15px;
     margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Focus effect for inputs */
-.root input[type="email"]:focus,
-.root input[type="password"]:focus {
-    border-color: #2a5298;
-    box-shadow: 0 0 8px rgba(42, 82, 152, 0.5);
-    outline: none;
-}
-
-/* Optional: Style for a submit button if you add one */
-.root button {
-    width: 100%;
-    padding: 12px;
-    background-color: #2a5298;
-    color: #fff;
-    font-size: 1rem;
     border: none;
     border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus,
+.login-form input[type="text"]:focus,
+.login-form input[type="email"]:focus,
+.login-form input[type="password"]:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Role-Specific Input Glow */
+.admin input[type="text"]:focus,
+.admin input[type="email"]:focus,
+.admin input[type="password"]:focus,
+.admin-login input[type="text"]:focus,
+.admin-login input[type="email"]:focus,
+.admin-login input[type="password"]:focus {
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+}
+
+.student input[type="text"]:focus,
+.student input[type="email"]:focus,
+.student input[type="password"]:focus,
+.student-login input[type="text"]:focus,
+.student-login input[type="email"]:focus,
+.student-login input[type="password"]:focus {
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
+}
+
+.teacher input[type="text"]:focus,
+.teacher input[type="email"]:focus,
+.teacher input[type="password"]:focus,
+.teacher-login input[type="text"]:focus,
+.teacher-login input[type="email"]:focus,
+.teacher-login input[type="password"]:focus {
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+}
+
+/* Submit Button */
+form button[type="submit"],
+.login-form button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.2em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ffffff;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.root button:hover {
-    background-color: #1e3c72;
+.admin button[type="submit"],
+.admin-login button[type="submit"] {
+    background: linear-gradient(to right, #ff6b6b, #ff8e53);
+    /* Coral to peach */
 }
 
-.acc {
-    background-color: rgba(0, 0, 0, 0.3);
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
+.admin button[type="submit"]:hover,
+.admin-login button[type="submit"]:hover {
+    background: linear-gradient(to right, #ff8e53, #ff6b6b);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
+}
+
+.student button[type="submit"],
+.student-login button[type="submit"] {
+    background: linear-gradient(to right, #3498db, #2980b9);
+    /* Blue to deep blue */
+}
+
+.student button[type="submit"]:hover,
+.student-login button[type="submit"]:hover {
+    background: linear-gradient(to right, #2980b9, #3498db);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+}
+
+.teacher button[type="submit"],
+.teacher-login button[type="submit"] {
+    background: linear-gradient(to right, #2ecc71, #27ae60);
+    /* Green to deep green */
+}
+
+.teacher button[type="submit"]:hover,
+.teacher-login button[type="submit"]:hover {
+    background: linear-gradient(to right, #27ae60, #2ecc71);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
+}
+
+/* Links and Additional Text */
+.root p,
+.root a {
+    color: #d0d0e0;
+    font-size: 1em;
+    text-align: center;
+    margin: 10px 0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.root a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Error Message */
+.error-message {
+    text-align: center;
+    color: #ff3366;
+    /* Neon pink */
+    font-size: 1em;
+    margin-top: 15px;
+    text-shadow: 0 0 5px rgba(255, 51, 102, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+
+    .root,
+    .login-container {
+        padding: 30px;
+        max-width: 90%;
+    }
+
+    .root h2,
+    .login-container h1 {
+        font-size: 1.8em;
+    }
+
+    form button[type="submit"],
+    .login-form button[type="submit"] {
+        padding: 12px;
+        font-size: 1.1em;
+    }
 }

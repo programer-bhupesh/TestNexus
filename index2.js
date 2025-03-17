@@ -13,6 +13,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const cors = require("cors");
 const fetch = require("node-fetch");
+const multer = require("multer");
 
 const adminRouter = require("./backend/routes/admin");
 const teacherRouter = require("./backend/routes/teacher");
@@ -22,16 +23,14 @@ const Admin = require("./backend/models/admin");
 const Teacher = require("./backend/models/teacher");
 const Student = require("./backend/models/student");
 
-// Application Configuration
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "frontend", "views"));
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride("_method"));
+app.use(methodOverride("_method")); // Ensure this is present
 app.use(express.static(path.join(__dirname, "frontend", "public")));
 app.use(express.json());
 app.use(cors());
 
-// Session Configuration
 app.use(
   session({
     secret: "yourSecretKey",
@@ -41,21 +40,17 @@ app.use(
   })
 );
 
-// Passport Configuration
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Define Passport strategies for each user type
 passport.use("admin-local", new LocalStrategy(Admin.authenticate()));
 passport.use("teacher-local", new LocalStrategy(Teacher.authenticate()));
 passport.use("student-local", new LocalStrategy(Student.authenticate()));
 
-// Serialize user with type information
 passport.serializeUser((user, done) => {
   done(null, { id: user._id, type: user.constructor.modelName });
 });
 
-// Deserialize user based on type
 passport.deserializeUser((data, done) => {
   let Model;
   switch (data.type) {
@@ -76,13 +71,11 @@ passport.deserializeUser((data, done) => {
     .catch((err) => done(err));
 });
 
-// Database Connection
 mongoose
   .connect(MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Database connection error:", err));
 
-// Integrated Proxy Route for JDoodle API Execution
 app.post("/execute", async (req, res) => {
   try {
     const response = await fetch("https://api.jdoodle.com/v1/execute", {
@@ -98,17 +91,14 @@ app.post("/execute", async (req, res) => {
   }
 });
 
-// Routes
 app.use(adminRouter);
 app.use(teacherRouter);
 app.use(studentRouter);
 
-// Home Page
 app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
-// General Routes
 app.get("/forgetpwd", (req, res) => {
   res.render("forgetpwd.ejs");
 });
@@ -124,13 +114,17 @@ app.get("/logout", (req, res, next) => {
   });
 });
 
-// Error Handling
 app.use((err, req, res, next) => {
   console.error("Server error:", err.stack);
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).send("File size exceeds the 10MB limit.");
+    }
+    return res.status(400).send(`File upload error: ${err.message}`);
+  }
   res.status(500).send("Something went wrong!");
 });
 
-// Server Startup
 app.listen(8080, () => {
   console.log("Server is running on port 8080");
 });

@@ -4,27 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Nexus - A central hub for managing tests and evaluations.</title>
+    <title>Add a New Teacher - Test Nexus</title>
     <link rel="stylesheet" href="./css/loginstyles.css">
 </head>
 
-<body>
+<body class="teacher">
     <div class="root">
+        <h2>Add a New Teacher</h2>
         <form action="/addteacher" method="post">
-            <label for="username">UserName:</label>
-            <input name="username" id="username" required="true" />
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required="true">
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required="true" />
-            <label for="type"></label>
-            <a href="forgetpwd">forget Password</a>
-            <br><br>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required>
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <label for="fullName">Full Name</label>
+            <input type="text" name="fullName" id="fullName">
             <button type="submit">Add Teacher</button>
-            <br><br>
         </form>
+        <p>Or upload multiple teachers at once:</p>
+        <a href="/bulk-teachers">Bulk Upload Teachers</a>
+        <a href="/admin">Back to Dashboard</a>
     </div>
-    <script src="./js/pwdscript.js"></script>
+    <script src="/js/pwdscript.js"></script>
 </body>
 
 </html>

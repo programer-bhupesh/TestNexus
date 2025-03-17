@@ -2,27 +2,29 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Nexus - Admin Dashboard</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 
-<body>
+<body class="admin-theme">
     <!-- Toggle button for opening/closing the sidebar -->
-    <button id="toggle-btn" class="toggle-btn">&#9776;</button>
+    <button id="toggle-btn" class="toggle-btn"><span>☰</span></button>
 
     <!-- Sidebar Navigation -->
     <div id="sidebar" class="sidebar">
-        <div class="nav-item"><a href="/addadmin">Add Another Admin</a></div>
-        <div class="nav-item"><a href="/addteacher">Add Teacher</a></div>
-        <div class="nav-item"><a href="/addstudent">Add Student</a></div>
-        <div class="nav-item"><a href="/tests/create">Add Exam</a></div>
-        <div class="nav-item"><a href="/tests">View Exams</a></div>
-        <div class="nav-item"><a href="/admin/results">View Results</a></div>
-        <div class="nav-item"><a href="/">Total Students</a></div>
-        <div class="nav-item"><a href="/">Total Teachers</a></div>
-        <div class="nav-item"><a href="/logout">Logout</a></div>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="/addadmin">Add Another Admin</a></li>
+            <li class="nav-item"><a href="/addteacher">Add Teacher</a></li>
+            <li class="nav-item"><a href="/addstudent">Add Student</a></li>
+            <li class="nav-item"><a href="/tests/create">Add Exam</a></li>
+            <li class="nav-item"><a href="/tests">View Exams</a></li>
+            <li class="nav-item"><a href="/admin/results">View Results</a></li>
+            <li class="nav-item"><a href="/total-students">View Students</a></li>
+            <li class="nav-item"><a href="/total-teachers">View Teachers</a></li>
+            <li class="nav-item"><a href="/logout">Logout</a></li>
+        </ul>
     </div>
 
     <!-- Main Content Area -->
@@ -32,7 +34,7 @@
         </h2>
     </div>
 
-    <script src="./js/script.js"></script>
+    <script src="/js/dashboard.js"></script>
 </body>
 
 </html>

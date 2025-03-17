@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,13 +18,40 @@
       <a href="forgetpwd">forget Password</a>
       <br /><br />
       <button type="submit">Login</button>
-      <br /><br />
-      <div class="acc">
-        <pre>Don't Have an account ? <a href="/signup">Sign up</a></pre>
-      </div>
     </form>
   </div>
   <script src="./js/pwdscript.js"></script>
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Test Nexus</title>
+  <link rel="stylesheet" href="./css/loginstyles.css">
+</head>
+
+<body class="admin-login">
+  <div class="login-container">
+    <h1>Admin Login</h1>
+    <form class="login-form" action="/adminlogin" method="POST">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit">Login</button>
+    </form>
+    <% if (typeof error !=='undefined' ) { %>
+      <p class="error-message">
+        <%= error %>
+      </p>
+      <% } %>
+  </div>
 </body>
 
 </html>

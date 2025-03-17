@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Total Students - Test Nexus</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      /* Deep midnight blue gradient */
+      min-height: 100vh;
+      font-family: 'Arial', sans-serif;
+      padding: 20px;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      color: #e0e0e0;
+      font-size: 2.5em;
+      margin: 40px 0 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      background: linear-gradient(to right, #ffd700, #ffaa00);
+      /* Gold to amber */
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1.2em;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
+    }
+
+    .back-btn:hover {
+      background: linear-gradient(to right, #ffaa00, #ff8c00);
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    }
+
+    .students-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .student-card {
+      background: linear-gradient(145deg, #2a2a4a, #1f1f38);
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      padding: 25px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .student-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(52, 152, 219, 0.3);
+      /* Blue glow */
+    }
+
+    .student-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, #3498db, #2980b9);
+      /* Blue to deep blue */
+    }
+
+    .student-card h3 {
+      margin: 0 0 15px;
+      font-size: 1.5em;
+      color: #ffffff;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .student-card p {
+      margin: 10px 0;
+      color: #b0b0c0;
+      font-size: 1.1em;
+      line-height: 1.4;
+    }
+
+    .student-card p strong {
+      color: #e0e0e0;
+      font-weight: 500;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .update-btn,
+    .delete-btn {
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      flex: 1;
+      margin: 0 5px;
+      background: none;
+    }
+
+    .update-btn {
+      background: linear-gradient(to right, #9b59b6, #8e44ad);
+      /* Purple to deep purple */
+    }
+
+    .update-btn:hover {
+      background: linear-gradient(to right, #8e44ad, #7d3c98);
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(155, 89, 182, 0.6);
+    }
+
+    .delete-btn {
+      background: linear-gradient(to right, #e74c3c, #c0392b);
+      /* Red to deep red */
+    }
+
+    .delete-btn:hover {
+      background: linear-gradient(to right, #c0392b, #a93226);
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(231, 76, 60, 0.6);
+    }
+
+    .no-students {
+      text-align: center;
+      color: #8080a0;
+      font-size: 1.5em;
+      margin: 50px 0;
+      font-style: italic;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <button type="button" class="back-btn" onclick="window.location.href='/admin'">Back to Dashboard</button>
+  <h1>All Students</h1>
+  <% if (students.length===0) { %>
+    <p class="no-students">No students found.</p>
+    <% } else { %>
+      <div class="students-container">
+        <% students.forEach(student=> { %>
+          <div class="student-card">
+            <h3>
+              <%= student.username %>
+            </h3>
+            <p><strong>Email:</strong>
+              <%= student.email || 'N/A' %>
+            </p>
+            <p><strong>Full Name:</strong>
+              <%= student.fullName || 'N/A' %>
+            </p>
+            <div class="button-group">
+              <button type="button" class="update-btn"
+                onclick="window.location.href='/students/<%= student._id %>/update'">Update</button>
+              <form action="/students/<%= student._id %>/delete" method="POST" style="display: inline;">
+                <button type="submit" class="delete-btn"
+                  onclick="return confirm('Are you sure you want to delete this student? This will also delete all their responses.')">Delete</button>
+              </form>
+            </div>
+          </div>
+          <% }) %>
+      </div>
+      <% } %>
+        <% if (typeof message !=='undefined' ) { %>
+          <p
+            style="text-align: center; color: #9b59b6; font-size: 1.2em; margin: 20px 0; text-shadow: 0 0 5px rgba(155, 89, 182, 0.5);">
+            <%= message %>
+          </p>
+          <% } %>
+</body>
+
+</html>

@@ -4,9 +4,9 @@ const passport = require("passport");
 const Test = require("../models/test");
 const Question = require("../models/question");
 const Response = require("../models/response");
+const Student = require("../models/student");
 const fetch = require("node-fetch");
 
-// Middleware to check if user is authenticated as a student
 function isStudent(req, res, next) {
   if (req.isAuthenticated() && req.user.constructor.modelName === "Student") {
     return next();
@@ -14,12 +14,10 @@ function isStudent(req, res, next) {
   res.redirect("/studentlogin");
 }
 
-// Render student login page
 router.get("/studentlogin", (req, res) => {
   res.render("studentlogin.ejs");
 });
 
-// Handle student login POST request
 router.post(
   "/studentlogin",
   passport.authenticate("student-local", {
@@ -31,18 +29,15 @@ router.post(
   }
 );
 
-// Render student dashboard (protected)
 router.get("/student", isStudent, (req, res) => {
   res.render("student.ejs", { username: req.user.username });
 });
 
-// List eligible tests
 router.get("/eligible-tests", isStudent, async (req, res) => {
   const tests = await Test.find({ eligibleStudents: req.user._id });
   res.render("eligibleTests.ejs", { tests });
 });
 
-// Render test page
 router.get("/tests/:testId", isStudent, async (req, res) => {
   try {
     const test = await Test.findById(req.params.testId).populate("questions");
@@ -64,7 +59,6 @@ router.get("/tests/:testId", isStudent, async (req, res) => {
   }
 });
 
-// Function to execute code using JDoodle API
 async function executeCode({ code, stdin, language }) {
   const clientId = process.env.JDOODLE_CLIENT_ID;
   const clientSecret = process.env.JDOODLE_CLIENT_SECRET;
@@ -96,7 +90,6 @@ async function executeCode({ code, stdin, language }) {
   }
 }
 
-// Submit test answers with automatic evaluation
 router.post("/tests/:testId/submit", isStudent, async (req, res) => {
   try {
     const test = await Test.findById(req.params.testId).populate("questions");
@@ -197,7 +190,6 @@ router.post("/tests/:testId/submit", isStudent, async (req, res) => {
       }
       response.totalScore += score;
     }
-    console.log("Creating response with testId:", test._id);
     await response.save();
     res.redirect("/student/results");
   } catch (err) {
@@ -206,7 +198,6 @@ router.post("/tests/:testId/submit", isStudent, async (req, res) => {
   }
 });
 
-// View student's own test results
 router.get("/student/results", isStudent, async (req, res) => {
   try {
     const responses = await Response.find({ studentId: req.user._id }).populate(
@@ -215,12 +206,45 @@ router.get("/student/results", isStudent, async (req, res) => {
     const validResponses = responses.filter(
       (response) => response.testId !== null
     );
-    console.log("Valid responses:", validResponses);
     res.render("studentResults.ejs", { responses: validResponses });
   } catch (err) {
     console.error("Error fetching results:", err);
     res.status(500).send("Something went wrong!");
   }
+});
+
+router.get("/student/profile", isStudent, (req, res) => {
+  res.render("studentProfile.ejs", {
+    username: req.user.username,
+    email: req.user.email || "",
+    fullName: req.user.fullName || "",
+  });
+});
+
+router.post("/student/profile", isStudent, async (req, res) => {
+  try {
+    const { fullName, email } = req.body;
+    const student = await Student.findById(req.user._id);
+    if (!student) {
+      return res.status(404).send("Student not found");
+    }
+    student.fullName = fullName || student.fullName;
+    student.email = email || student.email;
+    await student.save();
+    res.redirect("/student/profile");
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+router.get("/student/settings", isStudent, (req, res) => {
+  res.render("studentSettings.ejs", { username: req.user.username });
+});
+
+router.post("/student/settings", isStudent, async (req, res) => {
+  // No settings to update currently, redirect back
+  res.redirect("/student/settings");
 });
 
 module.exports = router;

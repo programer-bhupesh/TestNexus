@@ -4,31 +4,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Tests - Test Nexus</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>View Exams - Test Nexus</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            /* Deep midnight blue gradient */
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e0e0e0;
+            /* Light gray for contrast */
+            font-size: 2.5em;
+            margin: 40px 0 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: linear-gradient(to right, #ffd700, #ffaa00);
+            /* Gold to amber */
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(to right, #ffaa00, #ff8c00);
+            /* Darker gold to amber */
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+            /* Neon gold glow */
+        }
+
+        .tests-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .test-card {
+            background: linear-gradient(145deg, #2a2a4a, #1f1f38);
+            /* Subtle dark gradient */
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .test-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 87, 34, 0.3);
+        }
+
+        .test-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #ff5733, #ff8c33);
+            /* Neon orange to amber */
+        }
+
+        .test-card h3 {
+            margin: 0 0 15px;
+            font-size: 1.5em;
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .test-card p {
+            margin: 10px 0;
+            color: #b0b0c0;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        .test-card p strong {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .add-question-btn,
+        .delete-btn {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            flex: 1;
+            margin: 0 5px;
+            background: none;
+        }
+
+        .add-question-btn {
+            background: linear-gradient(to right, #00ff99, #00cc99);
+            /* Neon green to teal */
+        }
+
+        .add-question-btn:hover {
+            background: linear-gradient(to right, #00cc99, #00b386);
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(0, 255, 153, 0.6);
+        }
+
+        .delete-btn {
+            background: linear-gradient(to right, #ff3366, #cc2952);
+            /* Neon pink to magenta */
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(to right, #cc2952, #b32447);
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(255, 51, 102, 0.6);
+        }
+
+        .no-tests {
+            text-align: center;
+            color: #8080a0;
+            font-size: 1.5em;
+            margin: 50px 0;
+            font-style: italic;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+    </style>
 </head>
 
 <body>
-    <h1>All Tests</h1>
-    <a href="/admin">Back to Dashboard</a>
+    <button type="button" class="back-btn" onclick="window.location.href='/admin'">Back to Dashboard</button>
+    <h1>View Exams</h1>
     <% if (tests.length===0) { %>
-        <p>No tests found.</p>
+        <p class="no-tests">No tests available yet.</p>
         <% } else { %>
-            <table>
-                <tr>
-                    <th>Test Name</th>
-                    <th>Actions</th>
-                </tr>
+            <div class="tests-container">
                 <% tests.forEach(test=> { %>
-                    <tr>
-                        <td>
+                    <div class="test-card">
+                        <h3>
                             <%= test.testName %>
-                        </td>
-                        <td><a href="/tests/<%= test._id %>/add-question">Add Questions</a></td>
-                    </tr>
+                        </h3>
+                        <p><strong>Assigned Teacher:</strong>
+                            <%= test.assignedTeacher ? test.assignedTeacher.username : 'Not Assigned' %>
+                        </p>
+                        <p><strong>Eligible Students:</strong>
+                            <%= test.eligibleStudents.length %>
+                        </p>
+                        <div class="button-group">
+                            <button type="button" class="add-question-btn"
+                                onclick="window.location.href='/tests/<%= test._id %>/questions/add'">Add
+                                Question</button>
+                            <form action="/tests/<%= test._id %>/delete" method="POST" style="display: inline;">
+                                <button type="submit" class="delete-btn"
+                                    onclick="return confirm('Are you sure you want to delete this test? This will also delete all related questions and responses.')">Delete</button>
+                            </form>
+                        </div>
+                    </div>
                     <% }) %>
-            </table>
+            </div>
             <% } %>
+                <% if (typeof message !=='undefined' ) { %>
+                    <p
+                        style="text-align: center; color: #00ff99; font-size: 1.2em; margin: 20px 0; text-shadow: 0 0 5px rgba(0, 255, 153, 0.5);">
+                        <%= message %>
+                    </p>
+                    <% } %>
 </body>
 
 </html>

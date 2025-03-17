@@ -1,27 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Nexus - A central hub for managing tests and evaluations.</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <title>Test Nexus - Student Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
-<body>
-    <button id="toggle-btn" class="toggle-btn">&#9776;</button>
+
+<body class="student-theme">
+    <!-- Toggle button for opening/closing the sidebar -->
+    <button id="toggle-btn" class="toggle-btn"><span>☰</span></button>
+
+    <!-- Sidebar Navigation -->
     <div id="sidebar" class="sidebar">
-        <!-- <div class="nav-item"><a href="">Write Test</a></div> -->
-        <div class="nav-item"><a href="/eligible-tests">View Test</a></div>
-        <div class="nav-item"><a href="/student/results">Results</a></div>
-        <div class="nav-item"><a href="#">Profile</a></div>
-        <div class="nav-item"><a href="#">Settings</a></div>
-        <div class="nav-item"><a href="/logout">Logout</a></div>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="/eligible-tests">View Available Tests</a></li>
+            <li class="nav-item"><a href="/student/results">View Results</a></li>
+            <li class="nav-item"><a href="/student/profile">Profile</a></li>
+            <li class="nav-item"><a href="/student/settings">Settings</a></li>
+            <li class="nav-item"><a href="/logout">Logout</a></li>
+        </ul>
     </div>
-        <!-- Main content area -->
-        <div class="main-content">
-            <h1>Welcome to Test Nexus</h1>
-            <h2>Welcome <%= username %>
-            </h2>
-        </div>
-    <script src="./js/script.js"></script>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1>Welcome to Test Nexus</h1>
+        <h2>Welcome <%= username %>
+        </h2>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
 </body>
+
 </html>

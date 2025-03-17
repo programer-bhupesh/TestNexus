@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Upload Teachers - Test Nexus</title>
+    <link rel="stylesheet" href="/css/bulkUpload.css">
+</head>
+
+<body>
+    <div class="container teacher-theme">
+        <h1>Bulk Upload Teachers</h1>
+        <form action="/bulk-teachers" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="teacherFile">Upload Teacher CSV File</label>
+                <input type="file" id="teacherFile" name="teacherFile" accept=".xlsx" required>
+            </div>
+            <button type="submit">Upload Teachers</button>
+        </form>
+    </div>
+</body>
+
+</html>

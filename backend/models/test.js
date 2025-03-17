@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const testSchema = new mongoose.Schema({
-  testName: { type: String, required: true },
+  testName: { type: String, required: true,unique:true },
   assignedTeacher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Teacher",

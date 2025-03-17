@@ -1,0 +1,306 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    /* Deep midnight blue gradient */
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    color: #e0e0e0;
+    overflow-x: hidden;
+}
+
+/* Toggle Button Styles */
+.toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    border: none;
+    border-radius: 12px;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    color: #ffffff;
+    cursor: pointer;
+    z-index: 1100;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Admin Theme Toggle */
+.admin-theme .toggle-btn {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    /* Coral to peach */
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.admin-theme .toggle-btn:hover {
+    background: linear-gradient(45deg, #ff8e53, #ff6b6b);
+    /* Reverse gradient */
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
+}
+
+.admin-theme .toggle-btn.active {
+    background: linear-gradient(45deg, #ff3366, #ff6680);
+    /* Pink gradient */
+}
+
+.admin-theme .toggle-btn.active:hover {
+    background: linear-gradient(45deg, #ff6680, #ff3366);
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
+}
+
+/* Student Theme Toggle */
+.student-theme .toggle-btn {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    /* Blue to deep blue */
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.student-theme .toggle-btn:hover {
+    background: linear-gradient(45deg, #2980b9, #3498db);
+    /* Reverse gradient */
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+}
+
+.student-theme .toggle-btn.active {
+    background: linear-gradient(45deg, #9b59b6, #8e44ad);
+    /* Purple to deep purple */
+}
+
+.student-theme .toggle-btn.active:hover {
+    background: linear-gradient(45deg, #8e44ad, #9b59b6);
+    box-shadow: 0 0 15px rgba(155, 89, 182, 0.6);
+}
+
+/* Teacher Theme Toggle */
+.teacher-theme .toggle-btn {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    /* Green to deep green */
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+.teacher-theme .toggle-btn:hover {
+    background: linear-gradient(45deg, #27ae60, #2ecc71);
+    /* Reverse gradient */
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
+}
+
+.teacher-theme .toggle-btn.active {
+    background: linear-gradient(45deg, #f1c40f, #e67e22);
+    /* Yellow to orange */
+}
+
+.teacher-theme .toggle-btn.active:hover {
+    background: linear-gradient(45deg, #e67e22, #f1c40f);
+    box-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
+}
+
+.toggle-btn span {
+    display: inline-block;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    /* Smooth icon transition */
+}
+
+.toggle-btn.active span {
+    transform: rotate(180deg);
+    /* Rotate for smooth transition */
+    opacity: 0.9;
+    /* Slight fade for elegance */
+}
+
+/* Sidebar Styles (Exact Reference Style) */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 270px;
+    height: 100vh;
+    background: #252545;
+    /* Dark slate with a hint of purple */
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    padding: 90px 0 20px;
+    overflow-y: auto;
+    /* Scrollable */
+    scrollbar-width: thin;
+    scrollbar-color: #ff8e53 #252545;
+    /* Custom peach scrollbar */
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #ff8e53;
+    /* Peach scrollbar */
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #252545;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 142, 83, 0.2), rgba(255, 142, 83, 0));
+    /* Subtle peach fade */
+    pointer-events: none;
+}
+
+.sidebar .nav-list {
+    list-style: none;
+    padding: 0 15px;
+}
+
+.sidebar .nav-item {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.sidebar .nav-item a {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    color: #d8d8e8;
+    /* Light gray with a soft purple tint */
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar .nav-item a::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    width: 6px;
+    height: 6px;
+    background: #ff8e53;
+    /* Peach dot */
+    border-radius: 50%;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 0.3s ease, left 0.3s ease;
+}
+
+.sidebar .nav-item a:hover::after {
+    opacity: 1;
+    left: 15px;
+}
+
+.sidebar .nav-item a:hover {
+    color: #ffffff;
+    background: rgba(255, 142, 83, 0.1);
+    /* Subtle peach overlay */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar .nav-item a[href="/logout"] {
+    color: #ff3366;
+    /* Neon pink */
+}
+
+.sidebar .nav-item a[href="/logout"]::after {
+    background: #ff3366;
+    /* Pink dot */
+}
+
+.sidebar .nav-item a[href="/logout"]:hover {
+    color: #ff6680;
+    background: rgba(255, 51, 102, 0.1);
+}
+
+/* Main Content Area */
+.main-content {
+    padding: 100px 20px 20px 80px;
+    transition: padding-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.active~.main-content {
+    padding-left: 350px;
+}
+
+.main-content h1 {
+    font-size: 3.5em;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Admin Theme Main Content */
+.admin-theme .main-content h1 {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 142, 83, 0.2);
+    /* Subtle peach glow */
+}
+
+/* Student Theme Main Content */
+.student-theme .main-content h1 {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 12px rgba(52, 152, 219, 0.2);
+    /* Subtle blue glow */
+}
+
+/* Teacher Theme Main Content */
+.teacher-theme .main-content h1 {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 12px rgba(46, 204, 113, 0.2);
+    /* Subtle green glow */
+}
+
+.main-content h2 {
+    font-size: 1.9em;
+    color: #b0b0c0;
+    font-weight: 300;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 220px;
+    }
+
+    .sidebar.active~.main-content {
+        padding-left: 280px;
+    }
+
+    .main-content h1 {
+        font-size: 2.6em;
+    }
+
+    .main-content h2 {
+        font-size: 1.6em;
+    }
+
+    .toggle-btn {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+    }
+}

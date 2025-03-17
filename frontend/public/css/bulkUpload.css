@@ -1,0 +1,190 @@
+body {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    /* Midnight blue gradient */
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 40px;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background: rgba(34, 34, 66, 0.9);
+    /* Glassmorphism */
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Student Theme */
+.container.student-theme::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #3498db, #2980b9);
+    /* Blue gradient */
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Teacher Theme */
+.container.teacher-theme::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    /* Green gradient */
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+}
+
+h1 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 2.2em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 1;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+label {
+    display: block;
+    color: #d0d0e0;
+    font-size: 1.1em;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 1em;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Student Theme Input Focus */
+.student-theme input[type="file"]:focus {
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
+    /* Blue glow */
+}
+
+/* Teacher Theme Input Focus */
+.teacher-theme input[type="file"]:focus {
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+    /* Green glow */
+}
+
+/* Student Theme Button */
+.student-theme button[type="submit"] {
+    display: block;
+    width: 200px;
+    padding: 14px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ffffff;
+    background: linear-gradient(to right, #3498db, #2980b9);
+    /* Blue gradient */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px auto 0;
+}
+
+.student-theme button[type="submit"]:hover {
+    background: linear-gradient(to right, #2980b9, #3498db);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+    /* Blue glow */
+}
+
+/* Teacher Theme Button */
+.teacher-theme button[type="submit"] {
+    display: block;
+    width: 200px;
+    padding: 14px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ffffff;
+    background: linear-gradient(to right, #2ecc71, #27ae60);
+    /* Green gradient */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px auto 0;
+}
+
+.teacher-theme button[type="submit"]:hover {
+    background: linear-gradient(to right, #27ae60, #2ecc71);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
+    /* Green glow */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+    }
+}

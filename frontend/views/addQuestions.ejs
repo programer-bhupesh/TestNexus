@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Questions to <%= test.testName %> - Test Nexus</title>
+    <link rel="stylesheet" href="/js/addQuestions.js">
+</head>
+
+<body class="<%= user && user.constructor.modelName === 'Admin' ? 'admin-form' : 'teacher-form' %>">
+    <div class="main-content">
+        <h1>Add Questions to <%= test.testName %>
+        </h1>
+        <form action="/tests/<%= test._id %>/questions/add" method="POST" id="questionsForm">
+            <div id="questions-container">
+                <div class="question-form" id="question-0">
+                    <div class="form-group">
+                        <label for="questions[0][questionText]">Question Text</label>
+                        <textarea name="questions[0][questionText]" required
+                            placeholder="Enter question text"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="questions[0][type]">Question Type</label>
+                        <select name="questions[0][type]" onchange="toggleFields(this, 0)" required>
+                            <option value="" disabled selected>Select type</option>
+                            <option value="multiple-choice">Multiple Choice</option>
+                            <option value="coding">Coding</option>
+                        </select>
+                    </div>
+                    <div class="mc-fields" id="mc-fields-0" style="display: none;">
+                        <div class="form-group option-group">
+                            <label>Options</label>
+                            <input type="text" name="questions[0][options][]" placeholder="Option 1" required>
+                            <input type="text" name="questions[0][options][]" placeholder="Option 2" required>
+                            <input type="text" name="questions[0][options][]" placeholder="Option 3" required>
+                            <input type="text" name="questions[0][options][]" placeholder="Option 4" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="questions[0][correctAnswer]">Correct Answer (0-3)</label>
+                            <input type="number" name="questions[0][correctAnswer]" min="0" max="3" required
+                                placeholder="e.g., 0">
+                        </div>
+                    </div>
+                    <div class="coding-fields" id="coding-fields-0" style="display: none;">
+                        <div class="form-group test-case-group">
+                            <label for="questions[0][testCasesCount]">Number of Test Cases</label>
+                            <input type="number" name="questions[0][testCasesCount]" id="testCasesCount-0" min="1"
+                                onchange="updateTestCases(0)" required placeholder="e.g., 2">
+                        </div>
+                        <div class="form-group test-case-group">
+                            <label>Test Case Inputs (First line: count, then inputs)</label>
+                            <textarea name="questions[0][testCasesInput]" id="testCasesInput-0" required
+                                placeholder="e.g.\n2\n1 2\n3 4"></textarea>
+                        </div>
+                        <div class="form-group test-case-group">
+                            <label>Test Case Outputs (One per line)</label>
+                            <textarea name="questions[0][testCasesOutput]" id="testCasesOutput-0" required
+                                placeholder="e.g.\n3\n7"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" onclick="addQuestion()">Add Another Question</button>
+            <button type="submit">Save Questions</button>
+        </form>
+    </div>
+    <script src="/js/addQuestions.js"></script>
+</body>
+
+</html>
