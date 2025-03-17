@@ -6,24 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create a New Test - Test Nexus</title>
     <link rel="stylesheet" href="/css/createTestCommon.css" />
-    <link rel="stylesheet" href="/css/createTestAdmin.css" />
+    <link rel="stylesheet" href="/css/createTestTeacher.css" />
 </head>
 
 <body>
     <div class="form-container">
         <h1>Create a New Test</h1>
-        <form action="/tests" method="POST">
+        <form action="/teacher/tests" method="POST">
             <label for="testName">Test Name</label>
             <input type="text" id="testName" name="testName" required placeholder="Enter test name" />
-            <label for="assignedTeacher">Assign Teacher</label>
-            <select id="assignedTeacher" name="assignedTeacher" required>
-                <option value="" disabled selected>Select a teacher</option>
-                <% teachers.forEach(teacher=> { %>
-                    <option value="<%= teacher._id %>">
-                        <%= teacher.username %>
-                    </option>
-                    <% }) %>
-            </select>
+            <!-- Hidden assignedTeacher field set to current teacher -->
+            <input type="hidden" name="assignedTeacher" value="<%= user._id %>">
             <label>Eligible Students</label>
             <div class="student-list">
                 <% students.forEach(student=> { %>
@@ -35,7 +28,7 @@
             </div>
             <button type="submit">Create Test</button>
         </form>
-        <a href="/admin" class="back-link">Back to Dashboard</a>
+        <a href="/teacher" class="back-link">Back to Dashboard</a>
     </div>
 </body>
 
