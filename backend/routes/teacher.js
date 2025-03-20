@@ -3,248 +3,250 @@ const router = express.Router();
 const passport = require("passport");
 const Test = require("../models/test");
 const Question = require("../models/question");
-const Response = require("../models/response");
+const Teacher = require("../models/teacher");
 const Student = require("../models/student");
-const fetch = require("node-fetch");
+const Response = require("../models/response");
+const XLSX = require("xlsx");
+const multer = require("multer");
 
-function isStudent(req, res, next) {
-  if (req.isAuthenticated() && req.user.constructor.modelName === "Student") {
+function isTeacher(req, res, next) {
+  if (req.isAuthenticated() && req.user.constructor.modelName === "Teacher") {
     return next();
   }
-  res.redirect("/studentlogin");
+  res.redirect("/teacherlogin");
 }
 
-router.get("/studentlogin", (req, res) => {
-  res.render("studentlogin.ejs");
+router.get("/teacherlogin", (req, res) => {
+  res.render("teacherlogin.ejs");
 });
 
 router.post(
-  "/studentlogin",
-  passport.authenticate("student-local", {
-    failureRedirect: "/studentlogin",
+  "/teacherlogin",
+  passport.authenticate("teacher-local", {
+    failureRedirect: "/teacherlogin",
   }),
   (req, res) => {
-    console.log("Authenticated student:", req.user);
-    res.redirect("/student");
+    res.redirect("/teacher");
   }
 );
 
-router.get("/student", isStudent, (req, res) => {
-  res.render("student.ejs", { username: req.user.username });
+router.get("/teacher", isTeacher, (req, res) => {
+  res.render("teacher.ejs", { username: req.user.username });
 });
 
-router.get("/eligible-tests", isStudent, async (req, res) => {
-  const tests = await Test.find({ eligibleStudents: req.user._id });
-  res.render("eligibleTests.ejs", { tests });
+// Updated route for creating a test (GET)
+router.get("/teacher/tests/create", isTeacher, async (req, res) => {
+  const students = await Student.find({});
+  res.render("createTestTeacher.ejs", { students, user: req.user });
 });
 
-router.get("/tests/:testId", isStudent, async (req, res) => {
+// Updated route for creating a test (POST)
+router.post("/teacher/tests", isTeacher, async (req, res) => {
+  const { testName, eligibleStudents } = req.body;
+  const test = new Test({
+    testName,
+    assignedTeacher: req.user._id, // Automatically set to current teacher
+    eligibleStudents: eligibleStudents || [],
+  });
+  await test.save();
+  res.redirect("/my-tests?message=Test created successfully");
+});
+
+// My-tests route (unchanged)
+router.get("/my-tests", isTeacher, async (req, res) => {
+  const tests = await Test.find({ assignedTeacher: req.user._id }).populate(
+    "assignedTeacher",
+    "username"
+  );
+  res.render("myTests.ejs", { tests, user: req.user });
+});
+
+// Delete test route (unchanged)
+router.post("/tests/:testId/delete", isTeacher, async (req, res) => {
   try {
-    const test = await Test.findById(req.params.testId).populate("questions");
-    if (!test) {
-      return res.status(404).send("Test not found");
-    }
-    if (
-      !test.eligibleStudents.some(
-        (id) => id.toString() === req.user._id.toString()
-      )
-    ) {
+    const testId = req.params.testId;
+    const test = await Test.findById(testId);
+    if (!test || test.assignedTeacher.toString() !== req.user._id.toString()) {
       return res.status(403).send("Unauthorized");
     }
-    const testPlain = test.toObject();
-    res.render("takeTest.ejs", { test: testPlain });
+    await Question.deleteMany({ testId: testId });
+    await Response.deleteMany({ testId: testId });
+    await Test.findByIdAndDelete(testId);
+    res.redirect("/my-tests?message=Test deleted successfully");
   } catch (err) {
-    console.error("Error fetching test:", err);
+    console.error("Error deleting test:", err);
+    res.status(500).send("Something went wrong while deleting the test");
+  }
+});
+
+router.get("/tests/:testId/add-question", isTeacher, async (req, res) => {
+  const test = await Test.findById(req.params.testId);
+  if (!test || test.assignedTeacher.toString() !== req.user._id.toString()) {
+    return res.status(403).send("Unauthorized");
+  }
+  res.render("addQuestions.ejs", { test, user: req.user });
+});
+
+router.post("/tests/:testId/add-question", isTeacher, async (req, res) => {
+  try {
+    const test = await Test.findById(req.params.testId);
+    if (!test || test.assignedTeacher.toString() !== req.user._id.toString()) {
+      return res.status(403).send("Unauthorized");
+    }
+    const { questions } = req.body;
+    if (!questions || !Array.isArray(questions)) {
+      return res.status(400).send("Invalid questions data");
+    }
+    const newQuestions = [];
+    for (const q of questions) {
+      if (q.questionText && q.type) {
+        const questionData = {
+          testId: test._id,
+          questionText: q.questionText,
+          type: q.type,
+        };
+        if (q.type === "multiple-choice") {
+          questionData.options = q.options || [];
+          questionData.correctAnswer =
+            q.correctAnswer !== undefined
+              ? parseInt(q.correctAnswer)
+              : undefined;
+        } else if (q.type === "coding") {
+          questionData.testCases = parseTestCases(
+            q.testCasesInput,
+            q.testCasesOutput
+          );
+        }
+        const question = new Question(questionData);
+        const savedQuestion = await question.save();
+        newQuestions.push(savedQuestion._id);
+      }
+    }
+    res.redirect("/my-tests");
+  } catch (err) {
+    console.error("Error adding questions:", err);
     res.status(500).send("Something went wrong!");
   }
 });
 
-async function executeCode({ code, stdin, language }) {
-  const clientId = process.env.JDOODLE_CLIENT_ID;
-  const clientSecret = process.env.JDOODLE_CLIENT_SECRET;
-  const apiUrl = "https://api.jdoodle.com/v1/execute"; // Corrected to JDoodle API
-
-  const payload = {
-    clientId,
-    clientSecret,
-    script: code,
-    language: language === "javascript" ? "nodejs" : language,
-    versionIndex: "0",
-    stdin,
-  };
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await response.json();
-    if (!response.ok || data.error) {
-      throw new Error(data.error || "JDoodle execution failed");
-    }
-    return data;
-  } catch (error) {
-    console.error("JDoodle execution error:", error);
-    throw error;
-  }
+function parseTestCases(input, output) {
+  if (!input || !output) return [];
+  const inputLines = input.trim().split("\n");
+  const outputLines = output.trim().split("\n");
+  const count = parseInt(inputLines[0]) || 0;
+  return inputLines.slice(1).map((inputLine, i) => ({
+    input: inputLine.trim(),
+    expectedOutput: outputLines[i] ? outputLines[i].trim() : "",
+  }));
 }
 
-router.post("/tests/:testId/submit", isStudent, async (req, res) => {
-  try {
-    const test = await Test.findById(req.params.testId).populate("questions");
-    if (!test) return res.status(404).send("Test not found");
+router.get("/bulk-students", isTeacher, (req, res) => {
+  res.render("bulkStudents.ejs");
+});
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
     if (
-      !test.eligibleStudents.some(
-        (id) => id.toString() === req.user._id.toString()
-      )
+      file.mimetype.includes("spreadsheet") ||
+      file.mimetype.includes("excel")
     ) {
-      return res.status(403).send("Unauthorized");
+      cb(null, true);
+    } else {
+      cb(
+        new Error(
+          "Invalid file type. Please upload an Excel file (.xlsx or .xls)."
+        )
+      );
     }
-    const { answers, languages } = req.body;
-    const response = new Response({
-      studentId: req.user._id,
-      testId: test._id,
-      answers: [],
-      totalScore: 0,
+  },
+}).single("studentsFile");
+
+router.post("/bulk-students", isTeacher, upload, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .send("No file uploaded. Please select an Excel file.");
+    }
+    const workbook = XLSX.read(req.file.buffer, {
+      type: "buffer",
+      cellDates: true,
     });
-
-    for (const question of test.questions) {
-      const answer = answers[question._id];
-      let score = 0;
-      if (question.type === "multiple-choice") {
-        const isCorrect = parseInt(answer) === question.correctAnswer;
-        score = isCorrect ? 1 : 0;
-        response.answers.push({
-          questionId: question._id,
-          answer,
-          outputs: [],
-          score,
-        });
-      } else if (question.type === "coding") {
-        const language = languages[question._id];
-        const outputs = [];
-        let allTestCasesPassed = true;
-
-        const t = question.testCases.length;
-        const combinedInput = `${t}\n${question.testCases
-          .map((tc) => tc.input)
-          .join("\n")}`;
-        const expectedOutputs = question.testCases.map(
-          (tc) => tc.expectedOutput
-        );
-
-        let modifiedCode = answer;
-        if (language === "cpp" && !answer.includes("\n")) {
-          modifiedCode = answer.replace(/cout<<a\+b;/g, "cout<<a+b<<endl;");
-        }
-
-        try {
-          const result = await executeCode({
-            code: modifiedCode,
-            stdin: combinedInput,
-            language,
-          });
-          const actualOutput = result.output ? result.output.trim() : "";
-          const actualOutputLines = actualOutput
-            .split("\n")
-            .map((line) => line.trim())
-            .filter((line) => line !== "");
-
-          if (actualOutputLines.length !== expectedOutputs.length) {
-            allTestCasesPassed = false;
-          }
-
-          for (let i = 0; i < question.testCases.length; i++) {
-            const expected = expectedOutputs[i];
-            const actual =
-              i < actualOutputLines.length ? actualOutputLines[i] : "";
-            const isCorrect = actual === expected;
-
-            outputs.push({
-              testCaseIndex: i,
-              output: actual || "No output",
-              isCorrect,
-            });
-            if (!isCorrect) allTestCasesPassed = false;
-          }
-        } catch (e) {
-          for (let i = 0; i < question.testCases.length; i++) {
-            outputs.push({
-              testCaseIndex: i,
-              output: `Error: ${e.message}`,
-              isCorrect: false,
-            });
-          }
-          allTestCasesPassed = false;
-        }
-
-        score = allTestCasesPassed ? 1 : 0;
-        response.answers.push({
-          questionId: question._id,
-          answer,
-          language,
-          outputs,
-          score,
-        });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    if (!sheet) {
+      return res.status(400).send("No data found in the uploaded Excel file.");
+    }
+    const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+    const studentsData = [];
+    for (let i = 1; i < rawData.length; i++) {
+      const row = rawData[i];
+      const username = row[0];
+      const email = row[1];
+      const fullName = row[2];
+      if (row.every((cell) => cell === "" || cell === undefined)) {
+        break;
       }
-      response.totalScore += score;
+      if (!username || username === "") {
+        continue;
+      }
+      studentsData.push({
+        username: String(username).trim(),
+        email: email ? String(email).trim() : "",
+        fullName: fullName ? String(fullName).trim() : "",
+      });
     }
-    await response.save();
-    res.redirect("/student/results");
+    let successCount = 0;
+    let errorMessages = [];
+    const savePromises = studentsData.map(async (studentData) => {
+      try {
+        const student = new Student({
+          username: studentData.username,
+          email: studentData.email,
+          fullName: studentData.fullName,
+        });
+        await student.setPassword(studentData.username);
+        await student.save();
+        successCount++;
+      } catch (err) {
+        if (err.code === 11000) {
+          errorMessages.push(
+            `Duplicate username or email: ${studentData.username} / ${studentData.email}`
+          );
+        } else {
+          errorMessages.push(
+            `Error saving ${studentData.username}: ${err.message}`
+          );
+        }
+      }
+    });
+    await Promise.all(savePromises);
+    const responseMessage = `Uploaded ${successCount} students successfully.${
+      errorMessages.length > 0 ? " Errors: " + errorMessages.join("; ") : ""
+    }`;
+    res.redirect(`/teacher?message=${encodeURIComponent(responseMessage)}`);
   } catch (err) {
-    console.error("Error submitting test:", err);
-    res.status(500).send("Something went wrong!");
+    console.error("Error uploading students:", err);
+    res
+      .status(500)
+      .send(`Something went wrong during file upload: ${err.message}`);
   }
 });
 
-router.get("/student/results", isStudent, async (req, res) => {
+router.get("/teacher/results", isTeacher, async (req, res) => {
   try {
-    const responses = await Response.find({ studentId: req.user._id }).populate(
-      "testId"
-    );
-    const validResponses = responses.filter(
-      (response) => response.testId !== null
-    );
-    res.render("studentResults.ejs", { responses: validResponses });
+    const tests = await Test.find({ assignedTeacher: req.user._id });
+    const testIds = tests.map((test) => test._id);
+    const responses = await Response.find({ testId: { $in: testIds } })
+      .populate("studentId")
+      .populate("testId");
+    res.render("teacherResults.ejs", { responses });
   } catch (err) {
-    console.error("Error fetching results:", err);
+    console.error("Error fetching teacher results:", err);
     res.status(500).send("Something went wrong!");
   }
-});
-
-router.get("/student/profile", isStudent, (req, res) => {
-  res.render("studentProfile.ejs", {
-    username: req.user.username,
-    email: req.user.email || "",
-    fullName: req.user.fullName || "",
-  });
-});
-
-router.post("/student/profile", isStudent, async (req, res) => {
-  try {
-    const { fullName, email } = req.body;
-    const student = await Student.findById(req.user._id);
-    if (!student) {
-      return res.status(404).send("Student not found");
-    }
-    student.fullName = fullName || student.fullName;
-    student.email = email || student.email;
-    await student.save();
-    res.redirect("/student/profile");
-  } catch (err) {
-    console.error("Error updating profile:", err);
-    res.status(500).send("Something went wrong!");
-  }
-});
-
-router.get("/student/settings", isStudent, (req, res) => {
-  res.render("studentSettings.ejs", { username: req.user.username });
-});
-
-router.post("/student/settings", isStudent, async (req, res) => {
-  // No settings to update currently, redirect back
-  res.redirect("/student/settings");
 });
 
 module.exports = router;
