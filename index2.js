@@ -26,7 +26,7 @@ const Student = require("./backend/models/student");
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "frontend", "views"));
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride("_method")); // Ensure this is present
+app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "frontend", "public")));
 app.use(express.json());
 app.use(cors());
@@ -78,16 +78,30 @@ mongoose
 
 app.post("/execute", async (req, res) => {
   try {
+    const { script, language, versionIndex, stdin } = req.body;
+    const payload = {
+      clientId: process.env.JDOODLE_CLIENT_ID,
+      clientSecret: process.env.JDOODLE_CLIENT_SECRET,
+      script,
+      language,
+      versionIndex,
+      stdin,
+    };
+
     const response = await fetch("https://api.jdoodle.com/v1/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(payload),
     });
+
     const data = await response.json();
+    if (!response.ok || data.error) {
+      throw new Error(data.error || "JDoodle execution failed");
+    }
     res.json(data);
   } catch (error) {
     console.error("Error executing code:", error);
-    res.status(500).json({ error: "Error executing code" });
+    res.status(500).json({ error: "Error executing code: " + error.message });
   }
 });
 

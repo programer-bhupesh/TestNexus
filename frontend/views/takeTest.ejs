@@ -9,7 +9,6 @@
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e, #16213e);
-            /* Midnight blue gradient */
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -24,7 +23,6 @@
             width: 100%;
             max-width: 1000px;
             background: rgba(34, 34, 66, 0.9);
-            /* Glassmorphism */
             backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 40px;
@@ -42,7 +40,6 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(to bottom, #3498db, #2980b9);
-            /* Student blue gradient */
             opacity: 0.2;
             z-index: 0;
             pointer-events: none;
@@ -73,7 +70,6 @@
 
         .question:hover {
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
-            /* Blue glow on hover */
         }
 
         h3 {
@@ -109,7 +105,6 @@
             outline: none;
             background: rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
-            /* Blue glow */
         }
 
         .mc-options label {
@@ -124,7 +119,6 @@
         .mc-options input[type="radio"] {
             margin-right: 10px;
             accent-color: #3498db;
-            /* Blue accent */
             width: 18px;
             height: 18px;
             cursor: pointer;
@@ -137,12 +131,15 @@
 
         .code-editor-container {
             width: 100%;
-            height: 300px;
+            height: 350px;
+            /* Increased for better usability */
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #1e1e1e;
+            /* Darker background for editor */
             margin-bottom: 15px;
+            position: relative;
         }
 
         .test-cases {
@@ -176,13 +173,11 @@
 
         .accepted {
             color: #2ecc71;
-            /* Green for success */
             font-weight: bold;
         }
 
         .wrong {
             color: #e74c3c;
-            /* Red for error */
             font-weight: bold;
         }
 
@@ -196,7 +191,6 @@
             letter-spacing: 1px;
             color: #ffffff;
             background: linear-gradient(to right, #3498db, #2980b9);
-            /* Student blue gradient */
             cursor: pointer;
             transition: all 0.3s ease;
             margin-right: 10px;
@@ -207,7 +201,6 @@
             background: linear-gradient(to right, #2980b9, #3498db);
             transform: scale(1.05);
             box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
-            /* Blue glow */
         }
 
         .submit-btn {
@@ -252,6 +245,10 @@
 
             .submit-btn {
                 width: 100%;
+            }
+
+            .code-editor-container {
+                height: 250px;
             }
         }
     </style>
@@ -317,7 +314,7 @@
     <script type="application/json" id="test-data">
         <%- JSON.stringify(test) %>
     </script>
-    <script src="./js/takeTest.js"></script>
+    <script src="/js/takeTest.js"></script>
 </body>
 
 </html>

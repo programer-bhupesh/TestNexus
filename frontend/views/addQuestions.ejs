@@ -12,7 +12,9 @@
     <div class="main-content">
         <h1>Add Questions to <%= test.testName %>
         </h1>
-        <form action="/tests/<%= test._id %>/questions/add" method="POST" id="questionsForm">
+        <form
+            action="<%= user && user.constructor.modelName === 'Teacher' ? `/tests/${test._id}/add-question` : `/tests/${test._id}/questions/add` %>"
+            method="POST" id="questionsForm">
             <div id="questions-container">
                 <div class="question-form" id="question-0">
                     <div class="form-group">

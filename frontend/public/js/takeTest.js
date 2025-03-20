@@ -1,36 +1,42 @@
-// Configure Monaco Editor
+// Load Monaco Editor
 require.config({
   paths: {
     vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs",
   },
 });
 
-require(["vs/editor/editor.main"], function () {
-  document.querySelectorAll(".code-editor").forEach((textarea) => {
-    const questionId = textarea.name.match(/answers\[(.+)\]/)[1];
-    const languageSelect = document.getElementById(`language-${questionId}`);
-    const editorContainer = document.getElementById(`editor-${questionId}`);
+// Ensure DOM is loaded before initializing editors
+document.addEventListener("DOMContentLoaded", function () {
+  require(["vs/editor/editor.main"], function () {
+    document.querySelectorAll(".code-editor").forEach((textarea) => {
+      const questionId = textarea.name.match(/answers\[(.+)\]/)[1];
+      const languageSelect = document.getElementById(`language-${questionId}`);
+      const editorContainer = document.getElementById(`editor-${questionId}`);
 
-    const editor = monaco.editor.create(editorContainer, {
-      value: "// Write your code here...\n",
-      language: languageSelect.value,
-      theme: "vs-dark",
-      fontSize: 14,
-      automaticLayout: true,
-      scrollBeyondLastLine: false,
-      minimap: { enabled: false },
-    });
+      const editor = monaco.editor.create(editorContainer, {
+        value: "// Write your code here...\n",
+        language: languageSelect.value,
+        theme: "vs-dark",
+        fontSize: 14,
+        automaticLayout: true,
+        scrollBeyondLastLine: false,
+        minimap: { enabled: false },
+        lineNumbers: "on",
+        wordWrap: "on",
+        padding: { top: 10 },
+      });
 
-    textarea.editor = editor;
+      textarea.editor = editor;
 
-    // Sync editor with textarea
-    editor.onDidChangeModelContent(() => {
-      textarea.value = editor.getValue();
-    });
+      // Sync editor with textarea
+      editor.onDidChangeModelContent(() => {
+        textarea.value = editor.getValue();
+      });
 
-    // Update language
-    languageSelect.addEventListener("change", () => {
-      monaco.editor.setModelLanguage(editor.getModel(), languageSelect.value);
+      // Update language
+      languageSelect.addEventListener("change", () => {
+        monaco.editor.setModelLanguage(editor.getModel(), languageSelect.value);
+      });
     });
   });
 });
@@ -170,8 +176,7 @@ document.querySelectorAll(".run-tests").forEach((button) => {
 
         if (passed) {
           outputDiv.innerHTML = '<span class="accepted">Accepted</span>';
-          outputDiv.style.background =
-            "rgba(46, 204, 113, 0.2)"; /* Green tint */
+          outputDiv.style.background = "rgba(46, 204, 113, 0.2)";
         } else {
           outputDiv.innerHTML =
             '<span class="wrong">Wrong Answer</span><br>' +
@@ -179,7 +184,7 @@ document.querySelectorAll(".run-tests").forEach((button) => {
             expected +
             "<br><br>Your Output:<br>" +
             actualOutput;
-          outputDiv.style.background = "rgba(231, 76, 60, 0.2)"; /* Red tint */
+          outputDiv.style.background = "rgba(231, 76, 60, 0.2)";
         }
         setTimeout(
           () => (outputDiv.style.background = "rgba(255, 255, 255, 0.1)"),
