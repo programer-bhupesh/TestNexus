@@ -6,22 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create a New Test - Test Nexus</title>
     <link rel="stylesheet" href="/css/createTestCommon.css" />
-    <link rel="stylesheet" href="/css/createTestTeacher.css" />
+    <link rel="stylesheet" href="/css/createTestAdmin.css" />
 </head>
 
 <body>
     <div class="form-container">
         <h1>Create a New Test</h1>
-        <form action="/teacher/tests" method="POST">
+        <form action="/tests" method="POST">
             <label for="testName">Test Name</label>
             <input type="text" id="testName" name="testName" required placeholder="Enter test name" />
-            <input type="hidden" name="assignedTeacher" value="<%= user._id %>">
-            <label>Test Duration</label>
-            <div class="duration-inputs">
-                <input type="number" name="hours" min="0" placeholder="Hours" value="0" />
-                <input type="number" name="minutes" min="0" max="59" placeholder="Minutes" value="0" />
-                <input type="number" name="seconds" min="0" max="59" placeholder="Seconds" value="0" />
-            </div>
+            <label for="assignedTeacher">Assign Teacher</label>
+            <select id="assignedTeacher" name="assignedTeacher" required>
+                <option value="" disabled selected>Select a teacher</option>
+                <% teachers.forEach(teacher=> { %>
+                    <option value="<%= teacher._id %>">
+                        <%= teacher.username %>
+                    </option>
+                    <% }) %>
+            </select>
             <label>Eligible Students</label>
             <div class="student-list">
                 <% students.forEach(student=> { %>
@@ -33,7 +35,7 @@
             </div>
             <button type="submit">Create Test</button>
         </form>
-        <a href="/teacher" class="back-link">Back to Dashboard</a>
+        <a href="/admin" class="back-link">Back to Dashboard</a>
     </div>
 </body>
 

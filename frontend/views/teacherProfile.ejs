@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Profile - Test Nexus</title>
+    <title>Teacher Profile - Test Nexus</title>
     <style>
         * {
             margin: 0;
@@ -38,22 +38,22 @@
             justify-content: center;
         }
 
-        .student-theme .toggle-btn {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        .teacher-theme .toggle-btn {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
         }
 
-        .student-theme .toggle-btn:hover {
-            background: linear-gradient(45deg, #2980b9, #3498db);
+        .teacher-theme .toggle-btn:hover {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
             transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
         }
 
-        .student-theme .toggle-btn.active {
+        .teacher-theme .toggle-btn.active {
             background: linear-gradient(45deg, #9b59b6, #8e44ad);
         }
 
-        .student-theme .toggle-btn.active:hover {
+        .teacher-theme .toggle-btn.active:hover {
             background: linear-gradient(45deg, #8e44ad, #9b59b6);
             box-shadow: 0 0 15px rgba(155, 89, 182, 0.6);
         }
@@ -159,7 +159,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, #3498db, #2980b9);
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
             opacity: 0.2;
             z-index: 0;
             pointer-events: none;
@@ -211,7 +211,7 @@
         input[type="password"]:focus {
             outline: none;
             background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
         }
 
         form button[type="submit"] {
@@ -226,13 +226,13 @@
             color: #ffffff;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: linear-gradient(to right, #3498db, #2980b9);
+            background: linear-gradient(to right, #2ecc71, #27ae60);
         }
 
         button[type="submit"]:hover {
-            background: linear-gradient(to right, #2980b9, #3498db);
+            background: linear-gradient(to right, #27ae60, #2ecc71);
             transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.6);
         }
 
         a {
@@ -308,21 +308,21 @@
     </style>
 </head>
 
-<body class="student-theme">
+<body class="teacher-theme">
     <button id="toggle-btn" class="toggle-btn"><span>☰</span></button>
     <div id="sidebar" class="sidebar">
         <div class="nav-list">
-            <div class="nav-item"><a href="/student">Dashboard</a></div>
-            <div class="nav-item"><a href="/eligible-tests">View Tests</a></div>
-            <div class="nav-item"><a href="/student/results">Results</a></div>
-            <div class="nav-item"><a href="/student/profile">Profile</a></div>
+            <div class="nav-item"><a href="/teacher">Dashboard</a></div>
+            <div class="nav-item"><a href="/my-tests">My Tests</a></div>
+            <div class="nav-item"><a href="/teacher/results">Results</a></div>
+            <div class="nav-item"><a href="/teacher/profile">Profile</a></div>
             <div class="nav-item"><a href="/logout">Logout</a></div>
         </div>
     </div>
     <div class="main-content">
         <div class="form-container">
             <h1>Your Profile</h1>
-            <form action="/student/profile" method="POST">
+            <form action="/teacher/profile" method="POST">
                 <label for="username">Username (Read-only):</label>
                 <input type="text" id="username" name="username" value="<%= username %>" disabled>
 
@@ -343,7 +343,7 @@
 
                 <button type="submit">Update Profile</button>
             </form>
-            <a href="/student">Back to Dashboard</a>
+            <a href="/teacher">Back to Dashboard</a>
         </div>
     </div>
     <script>

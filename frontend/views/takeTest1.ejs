@@ -52,82 +52,10 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 10px;
+            margin-bottom: 30px;
             text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
             position: relative;
             z-index: 1;
-        }
-
-        .timer-container {
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        #timer {
-            font-size: 1.5em;
-            font-weight: 500;
-            color: #3498db;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 8px;
-            display: inline-block;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(34, 34, 66, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            text-align: center;
-            color: #ffffff;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .popup h2 {
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            color: #3498db;
-        }
-
-        .popup p {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-
-        .popup button {
-            padding: 10px 30px;
-            background: linear-gradient(to right, #3498db, #2980b9);
-            border: none;
-            border-radius: 25px;
-            color: #ffffff;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .popup button:hover {
-            background: linear-gradient(to right, #2980b9, #3498db);
-            transform: scale(1.05);
-        }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
         }
 
         .question {
@@ -204,10 +132,12 @@
         .code-editor-container {
             width: 100%;
             height: 350px;
+            /* Increased for better usability */
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.2);
             background: #1e1e1e;
+            /* Darker background for editor */
             margin-bottom: 15px;
             position: relative;
         }
@@ -303,15 +233,6 @@
                 font-size: 1.8em;
             }
 
-            .timer-container {
-                margin-bottom: 15px;
-            }
-
-            #timer {
-                font-size: 1.2em;
-                padding: 8px 15px;
-            }
-
             .question {
                 padding: 15px;
             }
@@ -329,36 +250,14 @@
             .code-editor-container {
                 height: 250px;
             }
-
-            .popup {
-                width: 90%;
-                padding: 20px;
-            }
-
-            .popup h2 {
-                font-size: 1.5em;
-            }
-
-            .popup p {
-                font-size: 1em;
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="overlay" id="overlay"></div>
-    <div class="popup" id="popup">
-        <h2>Time's Up!</h2>
-        <p>The time for the allotted test is completed.</p>
-        <button onclick="window.location.href='/student/results'">View Results</button>
-    </div>
     <div class="container">
         <h1>Test: <%= test.testName %>
         </h1>
-        <div class="timer-container">
-            <div id="timer">Time Left: 00:00:00</div>
-        </div>
         <form action="/tests/<%= test._id %>/submit" method="POST" id="testForm">
             <% test.questions.forEach((question, index)=> { %>
                 <div class="question">
@@ -408,11 +307,10 @@
                 </div>
                 <% }) %>
                     <button type="submit" class="submit-btn">Submit Test</button>
-                    <!-- Hidden submit button for programmatic submission -->
-                    <button type="submit" id="hidden-submit-button" style="display: none;"></button>
         </form>
     </div>
 
+    <!-- Pass test data as JSON -->
     <script type="application/json" id="test-data">
         <%- JSON.stringify(test) %>
     </script>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Response Details - <%= response.testId.testName %> - Test Nexus</title>
+    <link rel="stylesheet" href="/css/responseDetails.css" />
+</head>
+
+<body class="<%= userType %>-theme">
+    <div class="container">
+        <h1>Response Details for <%= response.testId.testName %>
+        </h1>
+        <div class="response-info">
+            <p><strong>Student:</strong>
+                <%= response.studentId.username %> (<%= response.studentId.fullName || 'N/A' %>)
+            </p>
+            <p><strong>Total Score:</strong>
+                <%= response.totalScore %> / <%= response.answers.length %>
+            </p>
+        </div>
+        <div class="questions-list">
+            <% response.answers.forEach((answer, index)=> { %>
+                <div class="question-card">
+                    <h3>Question <%= index + 1 %>: <%= answer.questionId.questionText %>
+                    </h3>
+                    <div class="answer-details">
+                        <% if (answer.questionId.type==='multiple-choice' ) { %>
+                            <p><strong>Options:</strong></p>
+                            <ul class="options-list">
+                                <% answer.questionId.options.forEach((option, optIndex)=> { %>
+                                    <li
+                                        class="<%= optIndex === answer.questionId.correctAnswer ? 'correct-option' : '' %> <%= optIndex === parseInt(answer.answer) ? (optIndex === answer.questionId.correctAnswer ? 'selected-correct' : 'selected-incorrect') : '' %>">
+                                        <%= option %>
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                            <p><strong>Score:</strong>
+                                <%= answer.score %>
+                            </p>
+                            <% } else if (answer.questionId.type==='coding' ) { %>
+                                <p><strong>Submitted Code:</strong></p>
+                                <pre><%= answer.answer %></pre>
+                                <p><strong>Language:</strong>
+                                    <%= answer.language %>
+                                </p>
+                                <p><strong>Test Case Results:</strong></p>
+                                <ul>
+                                    <% answer.outputs.forEach((output)=> { %>
+                                        <li>Test Case <%= output.testCaseIndex + 1 %>: <%= output.output %> (<%=
+                                                        output.isCorrect ? 'Correct' : 'Incorrect' %>)</li>
+                                        <% }) %>
+                                </ul>
+                                <p><strong>Score:</strong>
+                                    <%= answer.score %>
+                                </p>
+                                <% } %>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+        <a href="/<%= userType %>/results" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Results</a>
+    </div>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+
+</html>
