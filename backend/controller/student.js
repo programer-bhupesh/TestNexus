@@ -77,7 +77,7 @@ module.exports = {
     );
     if (!eligible) return res.status(403).send("Unauthorized");
 
-    const { answers, languages } = req.body;
+    const { answers = {}, languages = {} } = req.body; // default to empty objects to avoid undefined
     const response = new Response({
       studentId: req.user._id,
       testId: test._id,
@@ -86,7 +86,12 @@ module.exports = {
     });
 
     for (const question of test.questions) {
-      const answer = answers[question._id];
+      // Safely get answer or default to empty string if blank or missing
+      const answer =
+        answers[question._id] !== undefined && answers[question._id] !== null
+          ? answers[question._id]
+          : "";
+
       let score = 0;
 
       if (question.type === "multiple-choice") {
@@ -99,7 +104,7 @@ module.exports = {
           score,
         });
       } else if (question.type === "coding") {
-        const language = languages[question._id];
+        const language = languages[question._id] || "";
         const outputs = [];
         let allTestCasesPassed = true;
 
@@ -121,6 +126,7 @@ module.exports = {
             stdin: combinedInput,
             language,
           });
+
           const actualOutputLines = (result.output || "")
             .trim()
             .split("\n")
