@@ -47,7 +47,7 @@ const uploadteachers = multer({
       );
     }
   },
-}).single("teachersFile");
+}).single("teacherFile");
 
 router.get("/adminlogin", adminController.getAdminLogin);
 router.post(
