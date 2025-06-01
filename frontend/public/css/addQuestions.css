@@ -252,3 +252,18 @@ button[type="submit"] {
         padding: 15px;
     }
 }
+
+
+a {
+    color: #d0d0e0;
+    font-size: 1em;
+    text-align: center;
+    margin: 10px 0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}

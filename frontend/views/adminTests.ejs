@@ -170,41 +170,41 @@
 
 <body>
     <button type="button" class="back-btn" onclick="window.location.href='/admin'">Back to Dashboard</button>
-    <h1>View Exams</h1>
+    <h1>Exams</h1>
     <% if (tests.length===0) { %>
         <p class="no-tests">No tests available yet.</p>
-        <% } else { %>
-            <div class="tests-container">
-                <% tests.forEach(test=> { %>
-                    <div class="test-card">
-                        <h3>
-                            <%= test.testName %>
-                        </h3>
-                        <p><strong>Assigned Teacher:</strong>
-                            <%= test.assignedTeacher ? test.assignedTeacher.username : 'Not Assigned' %>
-                        </p>
-                        <p><strong>Eligible Students:</strong>
-                            <%= test.eligibleStudents.length %>
-                        </p>
-                        <div class="button-group">
-                            <button type="button" class="add-question-btn"
-                                onclick="window.location.href='/tests/<%= test._id %>/questions/add'">Add
-                                Question</button>
-                            <form action="/tests/<%= test._id %>/delete" method="POST" style="display: inline;">
-                                <button type="submit" class="delete-btn"
-                                    onclick="return confirm('Are you sure you want to delete this test? This will also delete all related questions and responses.')">Delete</button>
-                            </form>
-                        </div>
+    <% } else { %>
+        <div class="tests-container">
+            <% tests.forEach(test=> { %>
+                <div class="test-card">
+                    <h3>
+                        <%= test.testName %>
+                    </h3>
+                    <p><strong>Assigned Teacher:</strong>
+                        <%= test.assignedTeacher ? test.assignedTeacher.username : 'Not Assigned' %>
+                    </p>
+                    <p><strong>Eligible Students:</strong>
+                        <%= test.eligibleStudents.length %>
+                    </p>
+                    <div class="button-group">
+                        <button type="button" class="add-question-btn"
+                            onclick="window.location.href='/tests/<%= test._id %>/questions/add'">Add
+                            Question</button>
+                        <form action="/tests/<%= test._id %>/delete" method="POST" style="display: inline;">
+                            <button type="submit" class="delete-btn"
+                                onclick="return confirm('Are you sure you want to delete this test? This will also delete all related questions and responses.')">Delete</button>
+                        </form>
                     </div>
-                    <% }) %>
+                </div>
+            <% }) %>
             </div>
             <% } %>
-                <% if (typeof message !=='undefined' ) { %>
-                    <p
-                        style="text-align: center; color: #00ff99; font-size: 1.2em; margin: 20px 0; text-shadow: 0 0 5px rgba(0, 255, 153, 0.5);">
-                        <%= message %>
-                    </p>
-                    <% } %>
+            <% if (typeof message !=='undefined' ) { %>
+                <p
+                    style="text-align: center; color: #00ff99; font-size: 1.2em; margin: 20px 0; text-shadow: 0 0 5px rgba(0, 255, 153, 0.5);">
+                    <%= message %>
+                </p>
+            <% } %>
 </body>
 
 </html>
