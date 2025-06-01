@@ -1,8 +1,9 @@
 const express = require("express");
 const passport = require("passport");
 const controller = require("../controller/student");
-
 const router = express.Router();
+const { isStudent } = require("../middlewares/middleware");
+
 
 router.get("/studentlogin", controller.renderLogin);
 
@@ -12,36 +13,36 @@ router.post(
   controller.loginHandler
 );
 
-router.get("/student", controller.isStudent, controller.dashboard);
+router.get("/student", isStudent, controller.dashboard);
 
-router.get("/eligible-tests", controller.isStudent, controller.eligibleTests);
+router.get("/eligible-tests", isStudent, controller.eligibleTests);
 
-router.get("/tests/:testId", controller.isStudent, controller.takeTest);
+router.get("/tests/:testId", isStudent, controller.takeTest);
 
 router.post(
   "/tests/:testId/submit",
-  controller.isStudent,
+  isStudent,
   controller.submitTest
 );
 
-router.get("/student/results", controller.isStudent, controller.viewResults);
+router.get("/student/results", isStudent, controller.viewResults);
 
 router.get(
   "/student/results/:responseId",
-  controller.isStudent,
+  isStudent,
   controller.responseDetails
 );
 
-router.get("/student/profile", controller.isStudent, controller.renderProfile);
+router.get("/student/profile", isStudent, controller.renderProfile);
 
-router.post("/student/profile", controller.isStudent, controller.updateProfile);
+router.post("/student/profile", isStudent, controller.updateProfile);
 
 router.get(
   "/student/settings",
-  controller.isStudent,
+  isStudent,
   controller.renderSettings
 );
 
-router.post("/student/settings", controller.isStudent, controller.saveSettings);
+router.post("/student/settings", isStudent, controller.saveSettings);
 
 module.exports = router;

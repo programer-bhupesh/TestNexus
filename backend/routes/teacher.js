@@ -3,13 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const multer = require("multer");
 const controller = require("../controller/teacher");
-
-function isTeacher(req, res, next) {
-  if (req.isAuthenticated() && req.user.constructor.modelName === "Teacher") {
-    return next();
-  }
-  res.redirect("/teacherlogin");
-}
+const { isTeacher } = require("../middlewares/middleware");
 
 const upload = multer({
   storage: multer.memoryStorage(),

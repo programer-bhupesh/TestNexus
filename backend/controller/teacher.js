@@ -16,9 +16,32 @@ function parseTestCases(input, output) {
 }
 
 module.exports = {
-  renderLogin: (req, res) => res.render("teacherlogin.ejs"),
+  renderLogin: async (req, res) => {
+    try {
+      const teacherId = req.cookies.teacherId;
 
-  loginSuccess: (req, res) => res.redirect("/teacher"),
+      if (teacherId) {
+        const teacher = await Teacher.findById(teacherId);
+        if (teacher) {
+          return res.redirect("/teacher"); // Already logged in → redirect to dashboard
+        } else {
+          res.clearCookie("teacherId"); // Cleanup invalid cookie
+        }
+      }
+      res.render("teacherlogin.ejs"); // Render login page if not logged in
+    } catch (err) {
+      console.error("Error in getTeacherLogin:", err);
+      res.render("teacherlogin.ejs", { error: "Something went wrong." });
+    }
+  },
+  
+  loginSuccess: (req, res) => {
+    res.cookie("teacherId", req.user._id.toString(), {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.redirect("/teacher");
+  },
 
   dashboard: (req, res) =>
     res.render("teacher.ejs", { username: req.user.username }),

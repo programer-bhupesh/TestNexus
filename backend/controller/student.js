@@ -4,12 +4,7 @@ const Response = require("../models/response");
 const Student = require("../models/student");
 const fetch = require("node-fetch");
 
-function isStudent(req, res, next) {
-  if (req.isAuthenticated() && req.user.constructor.modelName === "Student") {
-    return next();
-  }
-  res.redirect("/studentlogin");
-}
+
 
 async function executeCode({ code, stdin, language }) {
   const clientId = process.env.JDOODLE_CLIENT_ID;
@@ -38,12 +33,30 @@ async function executeCode({ code, stdin, language }) {
 }
 
 module.exports = {
-  isStudent,
+  renderLogin: async (req, res) => {
+    try {
+      const studentId = req.cookies.studentId;
 
-  renderLogin: (req, res) => res.render("studentlogin.ejs"),
+      if (studentId) {
+        const student = await Student.findById(studentId);
+        if (student) {
+          return res.redirect("/student"); // Already logged in → redirect to dashboard
+        } else {
+          res.clearCookie("studentId"); // Cleanup invalid cookie
+        }
+      }
+      res.render("studentlogin.ejs"); // Render login page if not logged in
+    } catch (err) {
+      console.error("Error in getStudentLogin:", err);
+      res.render("studentlogin.ejs", { error: "Something went wrong." });
+    }
+  },
 
   loginHandler: (req, res) => {
-    console.log("Authenticated student:", req.user);
+    res.cookie("studentId", req.user._id.toString(), {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+    });
     res.redirect("/student");
   },
 

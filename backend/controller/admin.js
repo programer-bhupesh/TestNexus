@@ -18,11 +18,31 @@ function parseTestCases(input, output) {
 }
 
 const adminController = {
-  getAdminLogin: (req, res) => {
-    res.render("adminlogin.ejs");
+  getAdminLogin:async (req, res) => {
+    try {
+      const adminId = req.cookies.adminId;
+  
+      if (adminId) {
+        const admin = await Admin.findById(adminId);
+        if (admin) {
+          return res.redirect("/admin"); // Already logged in → redirect to dashboard
+        } else {
+          res.clearCookie("adminId"); // Cleanup invalid cookie
+        }
+      }
+      res.render("adminlogin.ejs"); // Render login page if not logged in
+    } catch (err) {
+      console.error("Error in getAdminLogin:", err);
+      res.render("adminlogin.ejs", { error: "Something went wrong." });
+    }
   },
 
-  postAdminLogin: (req, res) => {
+  postAdminLogin: async (req, res) => {
+    // Set cookie after successful login
+    res.cookie("adminId", req.user._id.toString(), {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     res.redirect("/admin");
   },
 

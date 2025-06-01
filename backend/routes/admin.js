@@ -3,13 +3,9 @@ const router = express.Router();
 const passport = require("passport");
 const multer = require("multer");
 const adminController = require("../controller/admin");
+const { isAdmin } = require("../middlewares/middleware");
 
-function isAdmin(req, res, next) {
-  if (req.isAuthenticated() && req.user.constructor.modelName === "Admin") {
-    return next();
-  }
-  res.redirect("/adminlogin");
-}
+
 
 function createExcelUploader(fieldName) {
   return multer({

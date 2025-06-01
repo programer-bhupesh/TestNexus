@@ -15,6 +15,8 @@ const cors = require("cors");
 const fetch = require("node-fetch");
 const multer = require("multer");
 const MongoStore = require("connect-mongo");
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 const adminRouter = require("./backend/routes/admin");
 const teacherRouter = require("./backend/routes/teacher");
@@ -124,6 +126,9 @@ app.get("/logout", (req, res, next) => {
     req.session.destroy((err) => {
       if (err) return next(err);
       res.clearCookie("connect.sid");
+      res.clearCookie("adminId");
+      res.clearCookie("teacherId");
+      res.clearCookie("studentId");
       res.redirect("/");
     });
   });
