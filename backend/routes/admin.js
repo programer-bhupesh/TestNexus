@@ -11,43 +11,29 @@ function isAdmin(req, res, next) {
   res.redirect("/adminlogin");
 }
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype.includes("spreadsheet") ||
-      file.mimetype.includes("excel")
-    ) {
-      cb(null, true);
-    } else {
-      cb(
-        new Error(
-          "Invalid file type. Please upload an Excel file (.xlsx or .xls)."
-        )
-      );
-    }
-  },
-}).single("studentsFile");
+function createExcelUploader(fieldName) {
+  return multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+      if (
+        file.mimetype.includes("spreadsheet") ||
+        file.mimetype.includes("excel")
+      ) {
+        cb(null, true);
+      } else {
+        cb(
+          new Error(
+            "Invalid file type. Please upload an Excel file (.xlsx or .xls)."
+          )
+        );
+      }
+    },
+  }).single(fieldName);
+}
 
-const uploadteachers = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype.includes("spreadsheet") ||
-      file.mimetype.includes("excel")
-    ) {
-      cb(null, true);
-    } else {
-      cb(
-        new Error(
-          "Invalid file type. Please upload an Excel file (.xlsx or .xls)."
-        )
-      );
-    }
-  },
-}).single("teacherFile");
+const upload = createExcelUploader("studentsFile");
+const uploadteachers = createExcelUploader("teacherFile");
 
 router.get("/adminlogin", adminController.getAdminLogin);
 router.post(

@@ -9,7 +9,7 @@
 </head>
 
 <body class="teacher-login">
-    <div class="login-container">
+    <div class="login-container root">
         <h1>Teacher Login</h1>
         <form class="login-form" action="/teacherlogin" method="POST">
             <label for="username">Username</label>
@@ -19,6 +19,8 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
             <button type="submit">Login</button>
+            <br><br>
+            <a href="/">Back</a>
         </form>
         <% if (typeof error !=='undefined' ) { %>
             <p class="error-message">
