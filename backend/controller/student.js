@@ -4,8 +4,6 @@ const Response = require("../models/response");
 const Student = require("../models/student");
 const fetch = require("node-fetch");
 
-
-
 async function executeCode({ code, stdin, language }) {
   const clientId = process.env.JDOODLE_CLIENT_ID;
   const clientSecret = process.env.JDOODLE_CLIENT_SECRET;
@@ -91,13 +89,20 @@ module.exports = {
     if (!eligible) return res.status(403).send("Unauthorized");
 
     const { answers = {}, languages = {} } = req.body; // default to empty objects to avoid undefined
+    // const response = new Response({
+    //   studentId: req.user._id,
+    //   testId: test._id,
+    //   answers: [],
+    //   totalScore: 0,
+    // });
+    const duration = parseInt(req.body.duration, 10) || 0;
     const response = new Response({
       studentId: req.user._id,
       testId: test._id,
       answers: [],
       totalScore: 0,
+      duration: duration, // Add this line
     });
-
     for (const question of test.questions) {
       // Safely get answer or default to empty string if blank or missing
       const answer =
@@ -184,7 +189,7 @@ module.exports = {
 
       response.totalScore += score;
     }
-
+    
     await response.save();
     res.redirect("/student/results");
   },

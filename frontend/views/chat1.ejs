@@ -1,0 +1,303 @@
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Chat - Test Nexus</title>
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+
+<body>
+    <div class="chat-container">
+        <h1>Ask AI Assistant</h1>
+        <div class="chat-history" id="chatHistory">
+            <% chats.forEach(chat=> { %>
+                <div class="chat-box">
+                    <button class="delete-btn" onclick="deleteChat('<%= chat._id %>')">🗑️</button>
+                    <% chat.messages.forEach(msg=> { %>
+                        <div class="<%= msg.from %>">
+                            <%= msg.text %>
+                        </div>
+                        <% }) %>
+                </div>
+                <% }) %>
+        </div>
+        <form id="chatForm">
+            <input type="text" id="messageInput" placeholder="Ask anything..." required>
+            <button type="submit">Send</button>
+        </form>
+        <a href="/<%= user.role %>/results">⬅ Back</a>
+    </div>
+    <script>
+        const chatForm = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+        const chatHistory = document.getElementById("chatHistory");
+
+        // Send message to backend and append AI response
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            messageInput.value = "";
+
+            // Send to server
+            const res = await fetch("/<%= user.role %>/ai-assist", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            const messages = await res.json(); // All messages for this user
+
+            // Create a new chat box (latest)
+            const chatBox = document.createElement("div");
+            chatBox.className = "chat-box";
+
+            // Add delete button
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.innerHTML = "🗑️";
+            deleteBtn.onclick = () => {
+                // Assumes the most recent chat has its own ID in a hidden field
+                fetch(`/<%= user.role %>/ai-assist/${messages._id}`, {
+                    method: "DELETE"
+                }).then(() => location.reload());
+            };
+            chatBox.appendChild(deleteBtn);
+
+            // Append each message (user & ai)
+            messages.forEach(msg => {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = msg.from;
+                msgDiv.textContent = msg.text;
+                chatBox.appendChild(msgDiv);
+            });
+
+            chatHistory.prepend(chatBox);
+        };
+
+        // Delete chat
+        function deleteChat(chatId) {
+            fetch(`/<%= user.role %>/ai-assist/${chatId}`, {
+                method: "DELETE"
+            }).then(() => location.reload());
+        }
+    </script>
+    
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Chat - Test Nexus</title>
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+
+<body>
+    <div class="chat-container">
+        <h1>Ask AI Assistant</h1>
+        <div class="chat-history" id="chatHistory">
+         
+            <% chats.forEach(chat=> { %>
+                <div class="chat-box" id="chat-<%= chat._id %>">
+                    <button class="delete-btn" onclick="deleteChat('<%= chat._id %>')">🗑️</button>
+                    <% chat.messages.forEach(msg=> { %>
+                        <div class="<%= msg.from %>">
+                            <%= msg.text %>
+                        </div>
+                        <% }) %>
+                </div>
+                <% }) %>
+        </div>
+
+        <form id="chatForm">
+            <input type="text" id="messageInput" placeholder="Ask anything..." required>
+            <button type="submit">Send</button>
+        </form>
+        <a href="/<%= user.role %>/results">⬅ Back</a>
+    </div>
+
+    <!-- <script>
+        const chatForm = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+        const chatHistory = document.getElementById("chatHistory");
+
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            messageInput.value = "";
+
+            const res = await fetch("/<%= user.role %>/ai-assist", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            const chat = await res.json(); // Expecting: { _id: ..., messages: [...] }
+
+            const chatBox = document.createElement("div");
+            chatBox.className = "chat-box";
+            chatBox.id = `chat-${chat._id}`;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.innerHTML = "🗑️";
+            deleteBtn.onclick = () => deleteChat(chat._id);
+            chatBox.appendChild(deleteBtn);
+
+            chat.messages.forEach(msg => {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = msg.from; // 'user' or 'ai'
+                msgDiv.textContent = msg.text;
+                chatBox.appendChild(msgDiv);
+            });
+
+            chatHistory.prepend(chatBox);
+        };
+
+        function deleteChat(chatId) {
+            fetch(`/<%= user.role %>/ai-assist/${chatId}`, {
+                method: "DELETE"
+            }).then(() => {
+                const chatBox = document.getElementById(`chat-${chatId}`);
+                if (chatBox) chatBox.remove();
+            });
+        }
+
+        chatForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                if (!message) return;
+
+                messageInput.value = "";
+
+                // Create chat box
+                const chatBox = document.createElement("div");
+                chatBox.className = "chat-box";
+
+                // Delete button (AI chat will have one ID after server returns)
+                const deleteBtn = document.createElement("button");
+                deleteBtn.className = "delete-btn";
+                chatBox.appendChild(deleteBtn); // filled later
+
+                // User message
+                const userMsg = document.createElement("div");
+                userMsg.className = "user";
+                userMsg.textContent = message;
+                chatBox.appendChild(userMsg);
+
+                // Typing bubble
+                const typingDiv = document.createElement("div");
+                typingDiv.className = "typing";
+                chatBox.appendChild(typingDiv);
+
+                chatHistory.prepend(chatBox);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                // Send message to server
+                const res = await fetch("/<%= user.role %>/ai-assist", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const chat = await res.json(); // { _id, messages }
+
+                // Remove typing div
+                typingDiv.remove();
+
+                // Fill in real messages
+                chat.messages.forEach(msg => {
+                    const msgDiv = document.createElement("div");
+                    msgDiv.className = msg.from;
+                    msgDiv.textContent = msg.text;
+                    chatBox.appendChild(msgDiv);
+                });
+
+                // Update delete button handler and icon
+                deleteBtn.innerHTML = "🗑️";
+                deleteBtn.onclick = () => deleteChat(chat._id);
+            };
+    </script> -->
+    <script>
+        const chatForm = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+        const chatHistory = document.getElementById("chatHistory");
+
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            messageInput.value = "";
+
+            // Create a temporary chat box with loading...
+            const chatBox = document.createElement("div");
+            chatBox.className = "chat-box";
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete-btn";
+            deleteBtn.innerHTML = "🗑️";
+            chatBox.appendChild(deleteBtn); // Button logic updated later
+
+            const userMsg = document.createElement("div");
+            userMsg.className = "user";
+            userMsg.textContent = message;
+            chatBox.appendChild(userMsg);
+
+            const typingDiv = document.createElement("div");
+            typingDiv.className = "ai";
+            typingDiv.textContent = "Typing...";
+            chatBox.appendChild(typingDiv);
+
+            chatHistory.prepend(chatBox);
+
+            // Send message to server
+            const res = await fetch("/<%= user.role %>/ai-assist", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            const chat = await res.json(); // Full chat with _id and messages
+
+            // Clear temporary typing
+            chatBox.innerHTML = "";
+
+            // Add delete button with chat ID
+            const btn = document.createElement("button");
+            btn.className = "delete-btn";
+            btn.innerHTML = "🗑️";
+            btn.onclick = () => deleteChat(chat._id);
+            chatBox.appendChild(btn);
+
+            // Append messages
+            chat.messages.forEach(msg => {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = msg.from;
+                msgDiv.textContent = msg.text;
+                chatBox.appendChild(msgDiv);
+            });
+
+            chatBox.id = `chat-${chat._id}`;
+        };
+
+        function deleteChat(chatId) {
+            fetch(`/<%= user.role %>/ai-assist/${chatId}`, {
+                method: "DELETE"
+            }).then(() => {
+                const chatBox = document.getElementById(`chat-${chatId}`);
+                if (chatBox) chatBox.remove();
+            });
+        }
+    </script>    
+    
+</body>
+
+</html>

@@ -5,8 +5,6 @@ const multer = require("multer");
 const adminController = require("../controller/admin");
 const { isAdmin } = require("../middlewares/middleware");
 
-
-
 function createExcelUploader(fieldName) {
   return multer({
     storage: multer.memoryStorage(),
@@ -112,5 +110,46 @@ router.post(
   isAdmin,
   adminController.postUpdateTeacher
 );
+
+const Chat = require("../models/chat.js");
+const { GeminiLLM } = require("../utils/gemini.js"); // Wrapper for Gemini API
+
+// Show chat UI
+router.get("/admin/ai-assist",isAdmin, async (req, res) => {
+  const chats = await Chat.find({ userId: req.user._id }).sort({
+    createdAt: -1,
+  });
+  res.render("chat", { user: req.user, chats });
+});
+
+router.post("/admin/ai-assist", isAdmin, async (req, res) => {
+  const { message } = req.body;
+
+  try {
+    const result = await GeminiLLM.ask(req.user._id, "Admin", message);
+    // Check if responseText exists
+    if (!result || !result.responseText) {
+      return res
+        .status(500)
+        .json({ error: "AI Assistant failed to generate a response." });
+    }
+
+    // Return the responseText and messages
+    res.json({ response: result.responseText, chat: result.messages });
+  } catch (err) {
+    console.error("AI Chat error:", err);
+    res.status(500).json({ error: "AI Assistant failed." });
+  }
+});
+
+router.delete("/admin/ai-assist/clear", isAdmin, async (req, res) => {
+  try {
+    await GeminiLLM.clearChat(req.user._id, "Admin");
+    res.json({ success: true, message: "Chat cleared." });
+  } catch (err) {
+    console.error("Clear Chat Error:", err);
+    res.status(500).json({ error: "Failed to clear chat." });
+  }
+});
 
 module.exports = router;

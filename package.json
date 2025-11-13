@@ -10,7 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^1.8.2",
+    "@google/genai": "^1.4.0",
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.9.0",
     "compile-run": "^2.3.4",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",

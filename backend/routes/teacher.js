@@ -61,4 +61,52 @@ router.get(
 router.get("/teacher/profile", isTeacher, controller.getProfile);
 router.post("/teacher/profile", isTeacher, controller.updateProfile);
 
+
+
+const Chat = require("../models/chat");
+const { GeminiLLM } = require("../utils/gemini");
+
+// Show chat UI for teachers
+router.get("/teacher/ai-assist", isTeacher, async (req, res) => {
+  try {
+    const chats = await Chat.find({ userId: req.user._id }).sort({
+      createdAt: -1,
+    });
+    res.render("chat", { user: req.user, chats });
+  } catch (err) {
+    console.error("Error fetching teacher chats:", err);
+    res.status(500).send("Server Error");
+  }
+});
+
+// Handle chat message submission for teachers
+router.post("/teacher/ai-assist", isTeacher, async (req, res) => {
+  const { message } = req.body;
+
+  try {
+    const result = await GeminiLLM.ask(req.user._id, "Admin", message);
+    if (!result || !result.responseText) {
+      return res
+        .status(500)
+        .json({ error: "AI Assistant failed to generate a response." });
+    }
+
+    res.json({ response: result.responseText, chat: result.messages });
+  } catch (err) {
+    console.error("AI Chat error:", err);
+    res.status(500).json({ error: "AI Assistant failed." });
+  }
+});
+
+// Delete a specific chat message for teachers
+router.delete("/teacher/ai-assist/clear", isTeacher, async (req, res) => {
+  try {
+    await GeminiLLM.clearChat(req.user._id, "Teacher");
+    res.json({ success: true, message: "Chat cleared." });
+  } catch (err) {
+    console.error("Clear Chat Error:", err);
+    res.status(500).json({ error: "Failed to clear chat." });
+  }
+});
+
 module.exports = router;

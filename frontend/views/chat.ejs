@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Ask AI Assistant</title>
+    <link rel="stylesheet" href="/css/chat.css" />
+</head>
+
+<body>
+    <div class="chat-container">
+        <h1>Ask AI Assistant</h1>
+
+        <div id="chatHistory" class="chat-history">
+<div id="typingIndicator" class="typing-indicator" aria-live="polite" style="display: none;">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="sr-only">AI is typing...</span>
+</div>
+            <% if (chats && chats.length> 0) { %>
+                <% chats.forEach(msg=> { %>
+                    <div class="message <%= msg.from === 'user' ? 'user-msg' : 'ai-msg' %>">
+                        <strong>
+                            <%= msg.from==='user' ? 'You' : 'AI' %>:
+                        </strong>
+                        <%= msg.text %>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <div class="no-history">No messages yet. Start the conversation!</div>
+                            <% } %>
+        </div>
+
+        <form id="chatForm">
+            <input type="text" id="messageInput" placeholder="Type your message..." required />
+            <button type="submit">Send</button>
+        </form>
+
+        <button id="clearChatBtn">Clear Chat</button>
+    </div>
+
+    <script>
+        const form = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+        const chatHistory = document.getElementById("chatHistory");
+        const clearBtn = document.getElementById("clearChatBtn");
+
+        form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                if (!message) return;
+
+                // Append user's message to chat history
+                const userDiv = document.createElement("div");
+                userDiv.className = "message user-msg";
+                const userTimestamp = new Date().toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                userDiv.innerHTML = `<strong>You:</strong> ${message}
+                       <div class="timestamp">${userTimestamp}</div>`;
+                chatHistory.appendChild(userDiv);
+
+                // Show typing indicator
+                typingIndicator.style.display = "flex";
+
+                try {
+                    const res = await fetch("/admin/ai-assist", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message }),
+                    });
+
+                    const data = await res.json();
+                    messageInput.value = "";
+
+                    // Hide typing indicator
+                    typingIndicator.style.display = "none";
+
+                    if (data.response) {
+                        // Append AI's response to chat history
+                        const aiDiv = document.createElement("div");
+                        aiDiv.className = "message ai-msg";
+                        const aiTimestamp = new Date().toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        aiDiv.innerHTML = `<strong>AI:</strong> ${data.response}
+                         <div class="timestamp">${aiTimestamp}</div>`;
+                        chatHistory.appendChild(aiDiv);
+                    } else if (data.error) {
+                        // Display error message
+                        const errorDiv = document.createElement("div");
+                        errorDiv.className = "message error-msg";
+                        errorDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
+                        chatHistory.appendChild(errorDiv);
+                    }
+
+                    // Scroll to the latest message
+                    chatHistory.scrollTop = chatHistory.scrollHeight;
+                } catch (err) {
+                    console.error("Fetch error:", err);
+                    typingIndicator.style.display = "none";
+                    const errorDiv = document.createElement("div");
+                    errorDiv.className = "message error-msg";
+                    errorDiv.innerHTML = `<strong>Error:</strong> Failed to fetch AI response.`;
+                    chatHistory.appendChild(errorDiv);
+                }
+            });
+            clearBtn.addEventListener("click", async () => {
+                    if (confirm("Are you sure you want to clear all chat history?")) {
+                        try {
+                            const res = await fetch("/admin/ai-assist/clear", {
+                                method: "DELETE",
+                            });
+
+                            if (res.ok) {
+                                chatHistory.innerHTML = `
+                            <div class="no-history">No messages yet. Start the conversation!</div>
+                        `;
+                            } else {
+                                alert("Failed to clear chat history.");
+                            }
+                        } catch (err) {
+                            console.error("Clear chat error:", err);
+                            alert("An error occurred while clearing chat.");
+                        }
+                    }
+                });
+    </script>
+</body>
+
+</html>

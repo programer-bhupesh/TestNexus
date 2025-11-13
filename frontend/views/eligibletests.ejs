@@ -2,126 +2,162 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TestNexus - A central hub for managing tests and evaluations</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eligible Tests - Test Nexus</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background: linear-gradient(135deg, #1a1a2e, #16213e);
-            /* Midnight blue gradient */
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 40px;
             color: #e0e0e0;
+            padding: 40px 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            background: rgba(34, 34, 66, 0.9);
-            /* Glassmorphism */
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-            animation: fadeIn 0.5s ease-in-out;
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: linear-gradient(to right, #ffd700, #ffaa00);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, #3498db, #2980b9);
-            /* Student blue gradient */
-            opacity: 0.2;
-            z-index: 0;
-            pointer-events: none;
+        .back-btn:hover {
+            background: linear-gradient(to right, #ffaa00, #ff8c00);
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
         }
 
         h1 {
-            text-align: center;
+            font-size: 2.5em;
             color: #ffffff;
-            font-size: 2.2em;
-            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 40px;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-            position: relative;
-            z-index: 1;
+            font-weight: 700;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 12px rgba(52, 152, 219, 0.3);
+            margin-bottom: 20px;
+            text-align: center;
         }
 
-        .test-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .search-container {
+            width: 90%;
+            max-width: 600px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 20px;
+            padding-right: 40px;
+            background: rgba(34, 34, 66, 0.9);
+            backdrop-filter: blur(12px);
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            color: #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background: rgba(52, 152, 219, 0.1);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
+        }
+
+        .search-bar::placeholder {
+            color: #b0b0c0;
+            opacity: 0.8;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;
+            font-size: 1.2em;
+        }
+
+        .tests-container {
+            width: 90%;
+            max-width: 1200px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
-            position: relative;
-            z-index: 1;
+            margin: 0 auto;
         }
 
         .test-card {
             background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
             border-radius: 15px;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in-out;
+            display: none;
+        }
+
+        .test-card.visible {
+            display: block;
         }
 
         .test-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
-            /* Blue glow */
+            box-shadow: 0 12px 30px rgba(52, 152, 219, 0.3);
             background: rgba(255, 255, 255, 0.15);
         }
 
         .test-name {
             font-size: 1.4em;
-            font-weight: 500;
-            color: #d0d0e0;
-            margin: 0 0 15px 0;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 15px;
             word-break: break-word;
         }
 
         .take-test-btn {
             display: inline-block;
-            padding: 12px 20px;
+            padding: 10px 20px;
             background: linear-gradient(to right, #3498db, #2980b9);
-            /* Student blue */
             color: #ffffff;
             text-decoration: none;
             border-radius: 25px;
             font-size: 1em;
             font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
             transition: all 0.3s ease;
-            align-self: flex-end;
         }
 
         .take-test-btn:hover {
             background: linear-gradient(to right, #2980b9, #3498db);
             transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
-            /* Blue glow */
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
         }
 
-        /* Animation */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -134,23 +170,26 @@
             }
         }
 
-        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                max-width: 90%;
-            }
-
             h1 {
-                font-size: 1.8em;
+                font-size: 2em;
             }
 
-            .test-list {
+            .search-container {
+                width: 95%;
+            }
+
+            .tests-container {
                 grid-template-columns: 1fr;
+                width: 95%;
             }
 
             .test-card {
                 padding: 15px;
+            }
+
+            .test-name {
+                font-size: 1.2em;
             }
 
             .take-test-btn {
@@ -162,19 +201,42 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Eligible Tests</h1>
-        <ul class="test-list">
-            <% tests.forEach(test=> { %>
-                <li class="test-card">
-                    <h2 class="test-name">
-                        <%= test.testName %>
-                    </h2>
-                    <a href="/tests/<%= test._id %>" class="take-test-btn">Take Test</a>
-                </li>
-                <% }) %>
-        </ul>
+    <button type="button" class="back-btn" onclick="window.location.href='/student'">Back to Dashboard</button>
+    <h1>Eligible Tests</h1>
+
+    <div class="search-container">
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search tests by name...">
+        <span class="search-icon">🔍</span>
     </div>
+
+    <div class="tests-container" id="tests-container">
+        <% tests.forEach(test=> { %>
+            <div class="test-card visible" data-test-name="<%= test.testName.toLowerCase() %>">
+                <h2 class="test-name">
+                    <%= test.testName %>
+                </h2>
+                <a href="/tests/<%= test._id %>" class="take-test-btn">Take Test</a>
+            </div>
+            <% }) %>
+    </div>
+
+    <script>
+        const searchBar = document.getElementById('search-bar');
+        const testsContainer = document.getElementById('tests-container');
+        const testCards = testsContainer.getElementsByClassName('test-card');
+
+        searchBar.addEventListener('input', function () {
+            const searchTerm = this.value.trim().toLowerCase();
+            Array.from(testCards).forEach(card => {
+                const testName = card.getAttribute('data-test-name');
+                if (testName.includes(searchTerm)) {
+                    card.classList.add('visible');
+                } else {
+                    card.classList.remove('visible');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
