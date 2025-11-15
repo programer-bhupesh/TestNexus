@@ -6,162 +6,184 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Total Students - Test Nexus</title>
   <style>
-    body {
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      /* Deep midnight blue gradient */
-      min-height: 100vh;
-      font-family: 'Arial', sans-serif;
-      padding: 20px;
-      position: relative;
-    }
+    /* ===== Base Styling ===== */
+body {
+  background: linear-gradient(135deg, #0f0f1a, #1a1a2e);
+  min-height: 100vh;
+  font-family: 'Poppins', Arial, sans-serif;
+  padding: 20px;
+  position: relative;
+  color: #e0e0e0;
+  transition: 0.4s ease;
+}
 
-    h1 {
-      text-align: center;
-      color: #e0e0e0;
-      font-size: 2.5em;
-      margin: 40px 0 20px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-weight: 600;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
+/* ===== Heading ===== */
+h1 {
+  text-align: center;
+  color: #ffffff;
+  font-size: 2.8em;
+  margin: 50px 0 30px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: 700;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
 
-    .back-btn {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      color: white;
-      background: linear-gradient(to right, #ffd700, #ffaa00);
-      /* Gold to amber */
-      border: none;
-      padding: 12px 25px;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 1.2em;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-      text-align: center;
-    }
+/* ===== Back Button ===== */
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: linear-gradient(135deg, #f7d46d, #ff9900);
+  color: #0f0f1a;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 30px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 188, 0, 0.4);
+}
 
-    .back-btn:hover {
-      background: linear-gradient(to right, #ffaa00, #ff8c00);
-      transform: scale(1.05);
-      box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
-    }
+.back-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 188, 0, 0.6);
+}
 
-    .students-container {
-      max-width: 1200px;
-      margin: 40px auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 25px;
-    }
 
-    .student-card {
-      background: linear-gradient(145deg, #2a2a4a, #1f1f38);
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-      padding: 25px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+/* ============================================================
+   STUDENT CARD GRID
+   ============================================================ */
+.students-container {
+  max-width: 1300px;
+  margin: 40px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 32px;
+}
 
-    .student-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(52, 152, 219, 0.3);
-      /* Blue glow */
-    }
+/* ============================================================
+   STUDENT CARD WITH DARK GLASS HOVER EFFECT
+   ============================================================ */
+.student-card {
+  background: rgba(35, 35, 60, 0.45);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: 0.35s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+}
 
-    .student-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(to right, #3498db, #2980b9);
-      /* Blue to deep blue */
-    }
+/* === DARK GLASS HOVER EFFECT === */
+.student-card:hover {
+  transform: translateY(-12px);
+  background: rgba(20, 20, 35, 0.70);
+  box-shadow: 
+     0 20px 40px rgba(0, 0, 0, 0.7),
+     0 0 20px rgba(52, 152, 219, 0.45);
+}
 
-    .student-card h3 {
-      margin: 0 0 15px;
-      font-size: 1.5em;
-      color: #ffffff;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
+/* Top Accent Line */
+.student-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(to right, #4aa3ff, #005fbb);
+}
 
-    .student-card p {
-      margin: 10px 0;
-      color: #b0b0c0;
-      font-size: 1.1em;
-      line-height: 1.4;
-    }
+/* Student Name */
+.student-card h3 {
+  margin: 0 0 15px;
+  font-size: 1.6em;
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
 
-    .student-card p strong {
-      color: #e0e0e0;
-      font-weight: 500;
-    }
+/* Detail Hover Highlight */
+.student-card p {
+  color: #d6d6e8;
+  margin: 10px 0;
+  font-size: 1.06em;
+  padding: 5px 0;
+  transition: 0.25s;
+}
 
-    .button-group {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
+.student-card p:hover {
+  color: #4aa3ff;
+  transform: translateX(4px);
+}
 
-    .update-btn,
-    .delete-btn {
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 1em;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-      flex: 1;
-      margin: 0 5px;
-      background: none;
-    }
+.student-card p strong {
+  color: #ffffff;
+}
 
-    .update-btn {
-      background: linear-gradient(to right, #9b59b6, #8e44ad);
-      /* Purple to deep purple */
-    }
+/* ============================================================
+   BUTTON GROUP
+   ============================================================ */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 22px;
+}
 
-    .update-btn:hover {
-      background: linear-gradient(to right, #8e44ad, #7d3c98);
-      transform: scale(1.05);
-      box-shadow: 0 0 12px rgba(155, 89, 182, 0.6);
-    }
+.update-btn,
+.delete-btn {
+  flex: 1;
+  padding: 12px;
+  margin: 0 6px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: 0.3s ease;
+  color: white;
+}
 
-    .delete-btn {
-      background: linear-gradient(to right, #e74c3c, #c0392b);
-      /* Red to deep red */
-    }
+/* Update Button */
+.update-btn {
+  background: linear-gradient(135deg, #a26bf8, #7129d1);
+  box-shadow: 0 4px 15px rgba(162, 107, 248, 0.3);
+}
 
-    .delete-btn:hover {
-      background: linear-gradient(to right, #c0392b, #a93226);
-      transform: scale(1.05);
-      box-shadow: 0 0 12px rgba(231, 76, 60, 0.6);
-    }
+.update-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(162, 107, 248, 0.6);
+}
 
-    .no-students {
-      text-align: center;
-      color: #8080a0;
-      font-size: 1.5em;
-      margin: 50px 0;
-      font-style: italic;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    }
+/* Delete Button */
+.delete-btn {
+  background: linear-gradient(135deg, #ff5b5b, #d62828);
+  box-shadow: 0 4px 15px rgba(255, 90, 90, 0.4);
+}
+
+.delete-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 90, 90, 0.7);
+}
+
+/* ===== No Students ===== */
+.no-students {
+  text-align: center;
+  color: #9a9ac7;
+  font-size: 1.6em;
+  margin: 60px 0;
+  font-style: italic;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+
   </style>
 </head>
 
